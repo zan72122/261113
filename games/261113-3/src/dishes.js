@@ -155,13 +155,14 @@
     'float wetK = uWet * (1.0 - texture2D(uMask, mUV).r);\n' +
     'wetK *= 0.8 + 0.2 * sin(vLP.x * 260.0 + sin(vLP.z * 190.0 + vLP.y * 150.0) * 2.0);\n' +
     'diffuseColor.rgb = mix(diffuseColor.rgb, diffuseColor.rgb * 0.50 + vec3(0.13, 0.16, 0.20), wetK * 0.95);\n' +
+    'diffuseColor.rgb *= mix(vec3(1.0), vec3(1.0, 0.84, 0.50), uGlow * 0.8);\n' +
     '#ifdef ABOOST\ndiffuseColor.a += wetK * 0.16;\n#endif\n' +
     'float bandS = (vLP.x * 0.8 + vLP.z * 0.25 + vLP.y * 0.6) * uMS.z;\n' +
     'diffuseColor.rgb *= 1.0 - 0.42 * max(0.0, exp(-pow((bandS - uBand) * 1.3, 2.0)) - exp(-pow((bandS - uBand) * 3.2, 2.0)));\n';
   var FS_ROUGH = '#include <roughnessmap_fragment>\nroughnessFactor = mix(roughnessFactor, 0.6, wetK);\n';
   var FS_EMIS = '#include <emissivemap_fragment>\n' +
     '{ float fres = pow(1.0 - abs(dot(normal, normalize(vViewPosition))), 2.0);\n' +
-    '  totalEmissiveRadiance += uGlowC * uGlow * (0.07 + 0.5 * fres);\n' +
+    '  totalEmissiveRadiance += uGlowC * uGlow * (0.24 + 0.6 * fres);\n' +
     '  float band = exp(-pow((bandS - uBand) * 4.0, 2.0));\n' +
     '  totalEmissiveRadiance += vec3(1.0, 0.95, 0.85) * band * (0.7 + 1.2 * fres); }\n';
   var FS_LIGHT = '#include <lights_physical_fragment>\n#ifdef USE_CLEARCOAT\nmaterial.clearcoat *= 1.0 - 0.8 * wetK;\nmaterial.clearcoatRoughness = mix(material.clearcoatRoughness, 0.5, wetK);\n#endif\n';
@@ -204,14 +205,14 @@
     S.foamMat = new T.MeshStandardMaterial({ color: 0xffffff, roughness: 0.92, metalness: 0,
       emissive: 0xeef3f6, emissiveIntensity: 0.34, envMapIntensity: 0.5 });
     S.riceTex = texRice();
-    S.riceMat = new T.MeshPhysicalMaterial({ color: 0xffffff, map: S.riceTex, bumpMap: S.riceTex, bumpScale: 0.9, roughness: 0.5,
+    S.riceMat = new T.MeshPhysicalMaterial({ color: 0xffffff, map: S.riceTex, bumpMap: S.riceTex, bumpScale: 0.006, roughness: 0.62,
       clearcoat: 0.25, clearcoatRoughness: 0.35, sheen: 0.3, sheenColor: new T.Color(0xffffff), sheenRoughness: 0.6 });
     S.grainMat = new T.MeshStandardMaterial({ color: 0xf5f2ea, roughness: 0.45 });
     S.grainGeo = new T.SphereGeometry(1, 8, 6);
     S.riceGeo = riceGeo(false);
     S.heapGeo = riceGeo(true);
     var kt = texKaraage();
-    S.karaMat = new T.MeshPhysicalMaterial({ color: 0xffffff, map: kt, bumpMap: kt, bumpScale: 1.6, roughness: 0.55, clearcoat: 0.35, clearcoatRoughness: 0.35 });
+    S.karaMat = new T.MeshPhysicalMaterial({ color: 0xffffff, map: kt, bumpMap: kt, bumpScale: 0.012, roughness: 0.6, clearcoat: 0.35, clearcoatRoughness: 0.35 });
     S.karaGeo = [karaGeo(1.3), karaGeo(4.1)];
     S.shadowTex = (function () {
       var c = cvs(64, 64), x = c.getContext('2d'), g = x.createRadialGradient(32, 32, 0, 32, 32, 32);
@@ -497,7 +498,7 @@
     this.biteT = 9; this.dripT = 3 + Math.random() * 3;
     this.foamK = 0; this.dirtyK = 0;
     this.U = { uMask: { value: null }, uMS: { value: new T.Vector4() }, uWet: { value: 1 }, uGlow: { value: 0 },
-      uBand: { value: -9 }, uGlowC: { value: new T.Color(1.0, 0.7, 0.4) } };
+      uBand: { value: -9 }, uGlowC: { value: new T.Color(1.0, 0.62, 0.22) } };
     this.mats = [];
     this.lastX = 0; this.lastY = 0; this.lastPT = 0; this.wiping = false;
     this.clothLP = new T.Vector3(); this.clothLN = new T.Vector3(0, 1, 0);
@@ -515,7 +516,7 @@
   function glaze(d, o) {
     var m = new T.MeshPhysicalMaterial({ color: o.color != null ? o.color : 0xffffff, map: o.map || null, roughness: 0.24, metalness: 0,
       clearcoat: 0.6, clearcoatRoughness: 0.12, envMapIntensity: 0.85 });
-    m.color.multiplyScalar(0.87);   // 白とびを防ぐ（磁器の白は 0.8 台）
+    m.color.multiplyScalar(0.80);   // 白とびを防ぐ（磁器の白は 0.8 台）
     m.onBeforeCompile = mkOBC(d.U);
     m.userData.kind = 'glaze';
     d.mats.push(m);
@@ -1286,7 +1287,7 @@
   function buildCloth() {
     var tex = texCloth();
     var bump = G.assets && G.assets.has && G.assets.has('linen') ? G.assets.tex('linen', { repeat: [3, 3], srgb: false }) : tex;
-    var mat = new T.MeshPhysicalMaterial({ color: 0xffffff, map: tex, bumpMap: bump, bumpScale: 0.6, roughness: 0.92, metalness: 0,
+    var mat = new T.MeshPhysicalMaterial({ color: 0xffffff, map: tex, bumpMap: bump, bumpScale: 0.02, roughness: 0.92, metalness: 0,
       sheen: 0.6, sheenColor: new T.Color(0xffffff), sheenRoughness: 0.75 });
     var ftex = tex.clone(); ftex.needsUpdate = true; ftex.repeat.set(1, 1); ftex.rotation = Math.PI / 2; ftex.center.set(0.5, 0.5);
     var fmat = mat.clone(); fmat.map = ftex;
