@@ -454,7 +454,7 @@
     if (perf.acc < 1) return;
     var avg = perf.acc / perf.n;
     perf.acc = 0; perf.n = 0;
-    var minPR = Math.min(0.75, basePR);
+    var minPR = Math.min(1, basePR);   // これ以上は下げない（ぼやけすぎ防止）
     if (avg > 0.040) {
       perf.fast = 0;
       if (++perf.slow >= 2) {

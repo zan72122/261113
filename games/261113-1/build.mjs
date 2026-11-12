@@ -4,7 +4,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const dir = path.dirname(fileURLToPath(import.meta.url));
-const src = (f) => fs.readFileSync(path.join(dir, 'src', f), 'utf8');
+const src = (f) => fs.readFileSync(f === 'story.js' && process.env.STORY ? process.env.STORY : path.join(dir, 'src', f), 'utf8');
 const ORDER = ['layout.js', 'core.js', 'audio.js', 'world.js', 'futon.js', 'props.js', 'story.js'];
 
 const assets = {};
@@ -25,6 +25,6 @@ const put = (mark, body) => {
 };
 put('/*__THREE__*/', safe(src('three.min.js')));
 put('/*__ASSETS__*/', 'window.G_ASSETS=' + safe(JSON.stringify(assets)) + ';');
-put('/*__CODE__*/', safe(ORDER.filter((f) => fs.existsSync(path.join(dir, 'src', f))).map((f) => `\n/* ---- ${f} ---- */\n` + src(f)).join('\n')));
-fs.writeFileSync(path.join(dir, 'index.html'), html);
+put('/*__CODE__*/', safe(ORDER.filter((f) => (f === 'story.js' && process.env.STORY) || fs.existsSync(path.join(dir, 'src', f))).map((f) => `\n/* ---- ${f} ---- */\n` + src(f)).join('\n')));
+fs.writeFileSync(process.env.OUT || path.join(dir, 'index.html'), html);
 console.log('index.html', (html.length / 1024 / 1024).toFixed(2) + ' MB', Object.keys(assets).join(','));

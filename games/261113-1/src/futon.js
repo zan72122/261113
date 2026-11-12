@@ -184,7 +184,7 @@
       for (iu = 0; iu < nu; iu++) {
         var u = iu / NU; i = iv * nu + iu;
         // 厚み = 基本厚 × キルト × ふちの絞り × しわ
-        var qf = 1 - fc * (1 - (0.42 + 0.58 * qb[i]));
+        var qf = 1 - fc * (1 - (0.76 + 0.24 * qb[i]));   // 縫い目の谷は浅め（本物の羽毛布団のなだらかさ）
         var dd = Math.min(ed[i] / Re, 1), ef = em + (1 - em) * Math.sqrt(1 - (1 - dd) * (1 - dd));
         var h = base * qf * ef * (1 + (1 - fc) * 0.22 * wr[i]) * (1 + 0.12 * bump);
         if (h < 0.008) h = 0.008;
@@ -296,7 +296,7 @@
     var cA = colArr;
     function setC(vi, gi, mul) {
       var d = DG[gi], ao = (1 - 0.16 * fc * (1 - qb[gi]) - (1 - fc) * 0.07 * Math.max(0, wr[gi])) * mul, p = vi * 3;
-      cA[p] = (1 - d * 0.38) * ao; cA[p + 1] = (1 - d * 0.42) * ao; cA[p + 2] = (1 - d * 0.48) * ao;
+      cA[p] = (1 - d * 0.6) * ao; cA[p + 1] = (1 - d * 0.65) * ao; cA[p + 2] = (1 - d * 0.7) * ao;
     }
     for (i = 0; i < NG; i++) { setC(i, i, 1); setC(NG + i, i, 1); }
     for (k = 0; k < NP; k++) for (j = 1; j <= K; j++) setC(2 * NG + k * K + j - 1, per[k], j === 2 || j === 3 ? 0.9 : 0.95);
@@ -400,7 +400,7 @@
     var ph = [r() * 6.28, r() * 6.28, r() * 6.28, r() * 6.28], fq = [3 + r() * 3, 2 + r() * 3, 6 + r() * 4, 5 + r() * 4];
     var ns = 5 + Math.floor(r() * 3), st = [];
     for (s = 0; s < ns; s++) {
-      st.push({ u: 0.12 + r() * 0.76, v: s < 3 ? 0.08 + r() * 0.37 : 0.08 + r() * 0.84, ru: 0.06 + r() * 0.1, rv: 0.05 + r() * 0.09,
+      st.push({ u: 0.12 + r() * 0.76, v: s < 3 ? 0.08 + r() * 0.37 : 0.08 + r() * 0.84, ru: 0.09 + r() * 0.11, rv: 0.07 + r() * 0.09,
         k: 0.45 + r() * 0.4, a: r() * 6.28, w: 0.15 + r() * 0.2 });
     }
     var sum = 0;
@@ -408,7 +408,7 @@
       var v = y / (DV - 1);
       for (x = 0; x < DU; x++) {
         var u = x / (DU - 1);
-        var d = 0.2 + 0.07 * Math.sin(u * fq[0] + ph[0]) * Math.sin(v * fq[1] + ph[1]) + 0.05 * Math.sin(u * fq[2] + v * fq[3] + ph[2]) +
+        var d = 0.27 + 0.07 * Math.sin(u * fq[0] + ph[0]) * Math.sin(v * fq[1] + ph[1]) + 0.05 * Math.sin(u * fq[2] + v * fq[3] + ph[2]) +
                 0.04 * Math.sin(v * 17 + u * 9 + ph[3]);
         for (s = 0; s < ns; s++) {
           var S = st[s], dx = (u - S.u) / S.ru, dy = (v - S.v) / S.rv, ang = Math.atan2(dy, dx);
