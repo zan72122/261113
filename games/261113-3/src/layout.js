@@ -20,7 +20,7 @@
     // 丸い食卓
     table: { x: 0.30, z: -1.50, r: 0.56, top: 0.72 },
     // ペンダントライト（食卓の真上）。knob = ひもの先の玉（引く所）。pull = 引ける長さ
-    lamp: { x: 0.30, z: -1.50, shadeY: 1.42, knob: { x: 0.30, y: 1.15, z: -1.36 }, pull: 0.09 },
+    lamp: { x: 0.30, z: -1.50, shadeY: 1.42, knob: { x: 0.30, y: 1.27, z: -1.36 }, pull: 0.09 },
     // 食器（id の順 = ふく順）。r = 口の半径, h = 高さ
     dishIds: ['plate', 'bowlL', 'bowlM', 'bowlS', 'glass'],
     dish: {
