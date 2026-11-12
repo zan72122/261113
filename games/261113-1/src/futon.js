@@ -509,12 +509,12 @@
     addRipple(u, v, p);
     wob.v += 0.6 * p;
     // 汚れを取る（rail では二つ折りの裏側も一緒に）
-    var frac = Math.min(0.95, 0.65 * p), rem = 0, both = curPose() === 3 || wRail > 0.5, mv2 = 1 - v;
+    var frac = Math.min(0.95, 0.75 * p), rem = 0, both = curPose() === 3 || wRail > 0.5, mv2 = 1 - v;
     for (var y = 0; y < DV; y++) {
       var vn = y / (DV - 1), dv1 = vn - v, dv2 = vn - mv2;
       for (var x = 0; x < DU; x++) {
-        var du = x / (DU - 1) - u, g = Math.exp(-2 * (du * du + dv1 * dv1) / 0.04);
-        if (both) { var g2 = Math.exp(-2 * (du * du + dv2 * dv2) / 0.04); if (g2 > g) g = g2; }
+        var du = x / (DU - 1) - u, g = Math.exp(-2 * (du * du + dv1 * dv1) / 0.075);
+        if (both) { var g2 = Math.exp(-2 * (du * du + dv2 * dv2) / 0.075); if (g2 > g) g = g2; }
         if (g < 0.002) continue;
         var o = y * DU + x, r = dust[o] * frac * g; dust[o] -= r; rem += r;
       }

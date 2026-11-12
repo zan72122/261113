@@ -919,7 +919,7 @@
     if (S.step === 'BEAT') {
       dUVt += dt;
       if (dUVt > 0.4) { dUVt = 0; refreshDUV(); }
-      if (!S.busy && dustLeft() < 0.1) {
+      if (!S.busy && dustLeft() < 0.14) {
         S.busy = true;
         G.hint.clear();
         if (S.popped < 1) popToday(0);
