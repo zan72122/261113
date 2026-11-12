@@ -61,18 +61,20 @@
   function makeCanvas(w, h) { var c = document.createElement('canvas'); c.width = w; c.height = h; return c; }
 
   // 高さ(0..255 の R)から法線マップを作る。v は上向き（flipY 前提）
-  function heightToNormal(hd, S, str) {
+  function heightToNormal(hd, S, str, mode) {
+    // mode 1: hd は 0..1 の Float32Array、それ以外: RGBA バイト列の R
+    var st = mode === 1 ? 1 : 4, sc = mode === 1 ? 1 : 1 / 255;
     var out = new Uint8ClampedArray(S * S * 4);
     for (var y = 0; y < S; y++) {
       var yu = ((y - 1 + S) % S) * S, yd = ((y + 1) % S) * S, yc = y * S;
       for (var x = 0; x < S; x++) {
         var xl = (x - 1 + S) % S, xr = (x + 1) % S;
-        var dx = (hd[(yc + xr) * 4] - hd[(yc + xl) * 4]) / 255 * str;
-        var dy = (hd[(yu + x) * 4] - hd[(yd + x) * 4]) / 255 * str;
-        var nx = -dx, ny = -dy, nz = 1, l = 1 / Math.sqrt(nx * nx + ny * ny + 1);
+        var dx = (hd[(yc + xr) * st] - hd[(yc + xl) * st]) * sc * str;
+        var dy = (hd[(yu + x) * st] - hd[(yd + x) * st]) * sc * str;
+        var nx = -dx, ny = -dy, l = 1 / Math.sqrt(nx * nx + ny * ny + 1);
         var i = (yc + x) * 4;
         out[i] = (nx * l * 0.5 + 0.5) * 255; out[i + 1] = (ny * l * 0.5 + 0.5) * 255;
-        out[i + 2] = (nz * l * 0.5 + 0.5) * 255; out[i + 3] = 255;
+        out[i + 2] = (l * 0.5 + 0.5) * 255; out[i + 3] = 255;
       }
     }
     return out;
@@ -91,56 +93,49 @@
   var RTEX = null;
   function riceTextures() {
     if (RTEX) return RTEX;
-    var S = tier() === 'low' ? 512 : 1024;
+    var S = tier() === 'low' ? 512 : 1024, SS = S * S;
     var k = S / (RICE_TILE * 1000);            // px / mm
-    var hc = makeCanvas(S, S), ac = makeCanvas(S, S);
-    var hx = hc.getContext('2d'), ax = ac.getContext('2d');
-    hx.fillStyle = '#000'; hx.fillRect(0, 0, S, S);
-    ax.fillStyle = 'rgb(196,190,177)'; ax.fillRect(0, 0, S, S);
+    var Hh = new Float32Array(SS), Dd = new Float32Array(SS), Tt = new Float32Array(SS), i, p;
+    for (p = 0; p < SS; p++) Dd[p] = 2;
     var r = rng(9137), count = 1150;
-    function grain(ctx, x, y, a, L, W, stops) {
-      for (var ox = -1; ox <= 1; ox++) for (var oy = -1; oy <= 1; oy++) {
-        var px = x + ox * S, py = y + oy * S;
-        if (px < -L || px > S + L || py < -L || py > S + L) continue;
-        ctx.save(); ctx.translate(px, py); ctx.rotate(a); ctx.scale(L, W);
-        var g = ctx.createRadialGradient(-0.12, -0.18, 0, 0, 0, 1);
-        for (var s = 0; s < stops.length; s++) g.addColorStop(stops[s][0], stops[s][1]);
-        ctx.fillStyle = g; ctx.beginPath();
-        // 少し角の丸い長円（カプセル寄りの楕円）
-        ctx.moveTo(1, 0);
-        for (var j = 1; j <= 24; j++) {
-          var th = j / 24 * TAU, c = Math.cos(th), sn = Math.sin(th);
-          var e = 0.78; // superellipse
-          ctx.lineTo(Math.sign(c) * Math.pow(Math.abs(c), e), Math.sign(sn) * Math.pow(Math.abs(sn), e));
-        }
-        ctx.closePath(); ctx.fill(); ctx.restore();
-      }
-    }
-    for (var i = 0; i < count; i++) {
+    for (i = 0; i < count; i++) {
       var x = r() * S, y = r() * S, a = r() * PI;
       var L = (4.7 + r() * 1.5) * k * 0.5, W = (2.3 + r() * 0.8) * k * 0.5;
-      var hv = 150 + r() * 105;
-      grain(hx, x, y, a, L, W, [
-        [0, 'rgb(' + (hv | 0) + ',0,0)'], [0.55, 'rgb(' + (hv * 0.9 | 0) + ',0,0)'],
-        [0.85, 'rgb(' + (hv * 0.62 | 0) + ',0,0)'], [1, 'rgb(' + (hv * 0.22 | 0) + ',0,0)']
-      ]);
-      var tr = r(), tl = tr < 0.18 ? -10 : (tr > 0.9 ? 4 : 0);  // 一部の粒は少し透けて灰色寄り
-      var w0 = 247 + tl, w1 = 239 + tl, w2 = 224 + tl, w3 = 198 + tl;
-      grain(ax, x, y, a, L, W, [
-        [0, 'rgb(' + w0 + ',' + (w0 - 3) + ',' + (w0 - 11) + ')'],
-        [0.55, 'rgb(' + w1 + ',' + (w1 - 4) + ',' + (w1 - 13) + ')'],
-        [0.88, 'rgb(' + w2 + ',' + (w2 - 6) + ',' + (w2 - 18) + ')'],
-        [1, 'rgb(' + w3 + ',' + (w3 - 7) + ',' + (w3 - 19) + ')']
-      ]);
+      var hv = 0.6 + r() * 0.4, tr = r(), tint = tr < 0.18 ? -10 : (tr > 0.9 ? 4 : 0);
+      var ca = Math.cos(a), sa = Math.sin(a);
+      var ex = Math.ceil(Math.sqrt(L * L * ca * ca + W * W * sa * sa)), ey = Math.ceil(Math.sqrt(L * L * sa * sa + W * W * ca * ca));
+      var x0 = Math.floor(x), y0 = Math.floor(y);
+      for (var py = y0 - ey; py <= y0 + ey; py++) {
+        var wy = ((py % S) + S) % S, dy = py + 0.5 - y;
+        for (var px = x0 - ex; px <= x0 + ex; px++) {
+          var dx = px + 0.5 - x;
+          var u = (dx * ca + dy * sa) / L, v = (-dx * sa + dy * ca) / W;
+          var u2 = u * u, d2 = u2 * u2 * 0.35 + u2 * 0.65 + v * v;   // 端が少し丸く太い長円
+          if (d2 >= 1) continue;
+          var q = wy * S + (((px % S) + S) % S);
+          var dd = Math.sqrt(d2);
+          Hh[q] = hv * (0.18 + 0.82 * Math.sqrt(1 - d2));
+          Dd[q] = dd; Tt[q] = tint;
+        }
+      }
     }
-    var hid = hx.getImageData(0, 0, S, S), hd = hid.data;
-    var aid = ax.getImageData(0, 0, S, S), ad = aid.data;
-    for (var p = 0; p < S * S; p++) {
-      var h = hd[p * 4] / 255, ao = 0.86 + 0.14 * smooth(0.05, 0.7, h);
-      ad[p * 4] *= ao; ad[p * 4 + 1] *= ao; ad[p * 4 + 2] *= ao * 0.995;
+    var ac = makeCanvas(S, S), ax = ac.getContext('2d'), aid = ax.createImageData(S, S), ad = aid.data;
+    for (p = 0; p < SS; p++) {
+      var o = p * 4, d = Dd[p], cr, cg, cb;
+      if (d > 1.5) { cr = 196; cg = 190; cb = 177; }
+      else {
+        var t = Tt[p], w;
+        if (d < 0.55) w = lerp(247, 239, d / 0.55);
+        else if (d < 0.88) w = lerp(239, 224, (d - 0.55) / 0.33);
+        else w = lerp(224, 200, (d - 0.88) / 0.12);
+        w += t;
+        cr = w; cg = w - 3 - d * 4; cb = w - 11 - d * 9;
+      }
+      var ao = 0.86 + 0.14 * smooth(0.05, 0.7, Hh[p]);
+      ad[o] = cr * ao; ad[o + 1] = cg * ao; ad[o + 2] = cb * ao * 0.995; ad[o + 3] = 255;
     }
     ax.putImageData(aid, 0, 0);
-    var nd = heightToNormal(hd, S, 5.5 * S / 1024);
+    var nd = heightToNormal(Hh, S, 5.5 * S / 1024, 1);
     var nc = makeCanvas(S, S), nx = nc.getContext('2d');
     var nid = nx.createImageData(S, S); nid.data.set(nd); nx.putImageData(nid, 0, 0);
     RTEX = { albedo: canvasTex(ac, true), normal: canvasTex(nc, false) };
@@ -154,7 +149,7 @@
     var tex = riceTextures();
     var m = new THREE.MeshPhysicalMaterial({
       color: 0xffffff, roughness: 0.5, metalness: 0,
-      clearcoat: 0.14, clearcoatRoughness: 0.38,
+      clearcoat: 0.3, clearcoatRoughness: 0.28,
       sheen: 0.45, sheenRoughness: 0.45, sheenColor: new THREE.Color(0xfff4e4)
     });
     m.onBeforeCompile = function (sh) {
@@ -285,39 +280,41 @@
   function noriMaterial() {
     if (NORI_MAT) return NORI_MAT;
     var S = tier() === 'low' ? 256 : 512;
-    var ac = makeCanvas(S, S), hc = makeCanvas(S, S);
-    var ax = ac.getContext('2d'), hx = hc.getContext('2d');
-    ax.fillStyle = 'rgb(30,36,27)'; ax.fillRect(0, 0, S, S);
-    hx.fillStyle = 'rgb(128,128,128)'; hx.fillRect(0, 0, S, S);
-    var r = rng(4242), i;
-    // うすい所・濃い所のむら
-    for (i = 0; i < 40; i++) {
-      var x = r() * S, y = r() * S, rad = (6 + r() * 26) * S / 512;
-      var g = ax.createRadialGradient(x, y, 0, x, y, rad);
-      var light = r() < 0.5;
-      g.addColorStop(0, light ? 'rgba(52,62,40,0.35)' : 'rgba(14,16,14,0.4)'); g.addColorStop(1, 'rgba(0,0,0,0)');
-      ax.fillStyle = g; ax.fillRect(x - rad, y - rad, rad * 2, rad * 2);
+    var SS = S * S, L = new Float32Array(SS), Pp = new Float32Array(SS), r = rng(4242), i, j;
+    for (i = 0; i < SS; i++) L[i] = 0.5;
+    // むら（大きめのやわらかい濃淡）
+    for (i = 0; i < 36; i++) {
+      var cx = r() * S, cy = r() * S, rad = (6 + r() * 26) * S / 512, amt = (r() < 0.5 ? 0.25 : -0.3);
+      for (var yy = -rad; yy <= rad; yy++) for (var xx = -rad; xx <= rad; xx++) {
+        var e = (xx * xx + yy * yy) / (rad * rad); if (e >= 1) continue;
+        var q = (((Math.floor(cy + yy) % S) + S) % S) * S + (((Math.floor(cx + xx) % S) + S) % S);
+        L[q] += amt * (1 - e) * (1 - e);
+      }
     }
     // 繊維
-    var nStroke = Math.floor(9000 * S * S / (512 * 512));
+    var nStroke = Math.floor(7000 * SS / (512 * 512));
     for (i = 0; i < nStroke; i++) {
-      var sx = r() * S, sy = r() * S, a = r() * PI, len = (1.5 + r() * 6) * S / 512;
-      var v = r();
-      var col = v < 0.35 ? 'rgba(12,15,12,0.55)' : (v < 0.8 ? 'rgba(42,52,36,0.45)' : (v < 0.93 ? 'rgba(58,70,46,0.4)' : 'rgba(46,36,48,0.35)'));
-      ax.strokeStyle = col; ax.lineWidth = (0.6 + r() * 1.2) * S / 512;
-      ax.beginPath(); ax.moveTo(sx, sy); ax.lineTo(sx + Math.cos(a) * len, sy + Math.sin(a) * len); ax.stroke();
-      var hv = v < 0.35 ? 90 : 170 + r() * 50;
-      hx.strokeStyle = 'rgba(' + (hv | 0) + ',0,0,0.5)'; hx.lineWidth = ax.lineWidth;
-      hx.beginPath(); hx.moveTo(sx, sy); hx.lineTo(sx + Math.cos(a) * len, sy + Math.sin(a) * len); hx.stroke();
+      var sx = r() * S, sy = r() * S, a = r() * PI, len = (1.5 + r() * 6) * S / 512, v = r();
+      var val = v < 0.4 ? -0.35 : (v < 0.85 ? 0.28 : 0.55), purple = v > 0.95 ? 1 : 0;
+      var dx = Math.cos(a), dy = Math.sin(a);
+      for (j = 0; j <= len; j++) {
+        var q2 = (((Math.floor(sy + dy * j) % S) + S) % S) * S + (((Math.floor(sx + dx * j) % S) + S) % S);
+        L[q2] = L[q2] * 0.5 + (0.5 + val) * 0.5; Pp[q2] = Pp[q2] * 0.5 + purple * 0.5;
+      }
     }
-    var hd = hx.getImageData(0, 0, S, S).data;
+    var ac = makeCanvas(S, S), ax = ac.getContext('2d'), aid = ax.createImageData(S, S), ad = aid.data;
+    for (i = 0; i < SS; i++) {
+      var l = clamp(L[i], 0, 1.2), pu = Pp[i];
+      ad[i * 4] = 12 + l * 30 + pu * 10; ad[i * 4 + 1] = 16 + l * 40; ad[i * 4 + 2] = 11 + l * 24 + pu * 12; ad[i * 4 + 3] = 255;
+    }
+    ax.putImageData(aid, 0, 0);
     var nc = makeCanvas(S, S), nx = nc.getContext('2d'), nid = nx.createImageData(S, S);
-    nid.data.set(heightToNormal(hd, S, 2.2 * S / 512)); nx.putImageData(nid, 0, 0);
+    nid.data.set(heightToNormal(L, S, 1.3 * S / 512, 1)); nx.putImageData(nid, 0, 0);
     NORI_MAT = new THREE.MeshPhysicalMaterial({
       color: 0xffffff, map: canvasTex(ac, true), normalMap: canvasTex(nc, false),
       normalScale: new THREE.Vector2(0.8, 0.8),
-      roughness: 0.5, metalness: 0, sheen: 0.35, sheenRoughness: 0.5, sheenColor: new THREE.Color(0x4a5a3c),
-      clearcoat: 0.12, clearcoatRoughness: 0.5, side: THREE.DoubleSide
+      roughness: 0.52, metalness: 0, sheen: 0.18, sheenRoughness: 0.6, sheenColor: new THREE.Color(0x3a4a30),
+      envMapIntensity: 0.35, side: THREE.DoubleSide
     });
     return NORI_MAT;
   }
@@ -335,7 +332,7 @@
   function sakeMaterial() {
     if (FILL_MATS.sake) return FILL_MATS.sake;
     var S = 256, c = makeCanvas(S, S), x = c.getContext('2d');
-    x.fillStyle = 'rgb(236,128,98)'; x.fillRect(0, 0, S, S);
+    x.fillStyle = 'rgb(240,146,112)'; x.fillRect(0, 0, S, S);
     var r = rng(77), i;
     for (i = 0; i < 600; i++) {
       x.fillStyle = r() < 0.5 ? 'rgba(220,104,78,0.25)' : 'rgba(246,156,124,0.25)';
@@ -360,7 +357,7 @@
   function kombuMaterial() {
     if (FILL_MATS.kombu) return FILL_MATS.kombu;
     FILL_MATS.kombu = new THREE.MeshPhysicalMaterial({
-      color: srgb(22, 27, 16), roughness: 0.24, metalness: 0, clearcoat: 1, clearcoatRoughness: 0.12,
+      color: srgb(30, 25, 13), roughness: 0.32, metalness: 0, clearcoat: 1, clearcoatRoughness: 0.08,
       side: THREE.DoubleSide
     });
     return FILL_MATS.kombu;
@@ -413,20 +410,22 @@
     for (var k = 0; k < count; k++) {
       var a = r() * TAU, rr = radius * Math.sqrt(r());
       var hy = height * Math.pow(Math.max(0, 1 - (rr / radius) * (rr / radius)), 0.8);
-      var L = 0.0022 + r() * 0.0028, W = 0.0011 + r() * 0.0011, T = 0.0008 + r() * 0.0007;
+      var L = 0.002 + r() * 0.0035, W = 0.0014 + r() * 0.0016, T = 0.0007 + r() * 0.0007;
       t.set(Math.cos(a) * rr, hy * (0.35 + 0.65 * r()) + T * 0.6, -Math.sin(a) * rr);
-      e.set((r() - 0.5) * 1.2, r() * TAU, (r() - 0.5) * 1.2); q.setFromEuler(e);
+      e.set((r() - 0.5) * 1.4, r() * TAU, (r() - 0.5) * 1.4); q.setFromEuler(e);
       s.set(L, T, W); m.compose(t, q, s);
-      var br = 0.82 + r() * 0.3, ph = r() * 10;
+      var br = 0.84 + r() * 0.26, ph = r() * 10, cut = r() * 0.6;
       for (var i = 0; i < up.count; i++) {
         var lx = up.getX(i), ly = up.getY(i), lz = up.getZ(i);
-        var d = 1 + 0.25 * noise3(lx * 1.7 + k * 3.1, ly * 1.7, lz * 1.7 + ph);
-        var bx = Math.sign(lx) * Math.pow(Math.abs(lx), 0.6);         // ほぐし身は角ばっている
-        var by = Math.sign(ly) * Math.pow(Math.abs(ly), 0.5);
-        v.set(bx * d, by * d, lz * d).applyMatrix4(m);
+        var d = 1 + 0.38 * noise3(lx * 2.3 + k * 3.1, ly * 2.3, lz * 2.3 + ph) + 0.12 * noise3(lx * 6 + ph, ly * 6, lz * 6);
+        var bx = Math.sign(lx) * Math.pow(Math.abs(lx), 0.75);         // ほぐし身は不揃いな薄片
+        var by = Math.sign(ly) * Math.pow(Math.abs(ly), 0.55);
+        var bz = Math.sign(lz) * Math.pow(Math.abs(lz), 0.85);
+        if (bx > 1 - cut) bx = 1 - cut + (bx - 1 + cut) * 0.3;            // 片側を割った面
+        v.set(bx * d, by * d, bz * d).applyMatrix4(m);
         pos.push(v.x, v.y, v.z);
         nor.push(0, 1, 0);
-        uv.push(lz * 0.6 + ph, lx * 0.12 + ph * 0.37);
+        uv.push(lz * 0.5 + ph, lx * 0.18 + ph * 0.37);
         col.push(c1.r * br, c1.g * br, c1.b * br);
       }
       for (i = 0; i < ui.length; i++) idx.push(ui[i] + base);
@@ -451,9 +450,9 @@
       var a = r() * TAU, rr = radius * Math.sqrt(r()) * 0.85;
       var hy = height * Math.pow(Math.max(0, 1 - (rr / radius) * (rr / radius)), 0.7) * (0.3 + 0.7 * r());
       P.set(Math.cos(a) * rr, hy + 0.0006, -Math.sin(a) * rr);
-      var yaw = r() * TAU, pitch = (r() - 0.5) * 0.9;
+      var yaw = r() * TAU, pitch = (r() - 0.5) * 0.3;
       D.set(Math.cos(yaw) * Math.cos(pitch), Math.sin(pitch), Math.sin(yaw) * Math.cos(pitch));
-      var len = 0.008 + r() * 0.01, wid = 0.0022 + r() * 0.0012, curl = (r() - 0.5) * 6, roll = (r() - 0.5) * 3;
+      var len = 0.007 + r() * 0.009, wid = 0.0024 + r() * 0.0014, curl = (r() < 0.5 ? -1 : 1) * (30 + r() * 140), roll = (r() - 0.5) * 160;
       var segL = len / SEG;
       P.addScaledVector(D, -len / 2);
       Nn.set(0, 1, 0); Nn.addScaledVector(D, -Nn.dot(D)).normalize();
@@ -463,7 +462,7 @@
         pos.push(P.x + Wv.x * w / 2, P.y + Wv.y * w / 2, P.z + Wv.z * w / 2);
         pos.push(P.x - Wv.x * w / 2, P.y - Wv.y * w / 2, P.z - Wv.z * w / 2);
         // 曲げる
-        D.addScaledVector(Nn, curl * segL * 0.9).addScaledVector(Wv, roll * segL * 0.6).normalize();
+        D.addScaledVector(Nn, curl * segL).addScaledVector(Wv, roll * segL * 0.4).normalize();
         Nn.addScaledVector(D, -Nn.dot(D)).normalize();
         P.addScaledVector(D, segL);
         if (P.y < 0.0004) P.y = 0.0004;
@@ -511,7 +510,7 @@
     } else if (kind === 'sake') {
       g.add(shadowMesh(sakeGeometry(tier() === 'low' ? 22 : 36, 0.0105, 0.009, 11 + seed), sakeMaterial()));
     } else {
-      g.add(shadowMesh(kombuGeometry(tier() === 'low' ? 22 : 36, 0.0105, 0.0075, 21 + seed), kombuMaterial()));
+      g.add(shadowMesh(kombuGeometry(tier() === 'low' ? 26 : 44, 0.0095, 0.007, 21 + seed), kombuMaterial()));
       g.add(shadowMesh(sesameGeometry(5, 0.008, 0.006, 31 + seed), sesameMaterial()));
     }
     g.userData.kind = kind;
@@ -530,9 +529,9 @@
         g.add(m);
       }
     } else if (kind === 'sake') {
-      g.add(shadowMesh(sakeGeometry(low ? 70 : 120, 0.021, 0.014, 101), sakeMaterial()));
+      g.add(shadowMesh(sakeGeometry(low ? 60 : 100, 0.021, 0.015, 101), sakeMaterial()));
     } else {
-      g.add(shadowMesh(kombuGeometry(low ? 50 : 85, 0.021, 0.011, 202), kombuMaterial()));
+      g.add(shadowMesh(kombuGeometry(low ? 80 : 150, 0.02, 0.013, 202), kombuMaterial()));
       g.add(shadowMesh(sesameGeometry(16, 0.019, 0.011, 303), sesameMaterial()));
     }
     g.userData.kind = kind;
@@ -673,10 +672,10 @@
     if (this.bites <= 0) return;
     // 円は上面の高さで中心に届かない大きさに限る（星形のまま切り取れるように）
     var sz = this.size, Rt = sampleOutline(this.outline, HALF_PI) * sz;
-    var r1 = 0.8 * sz, n1 = Math.max(Rt * 0.5, Rt - 0.75 * sz), a1 = HALF_PI + 0.07;
+    var r1 = 1.2 * sz, n1 = Math.max(Rt * 0.36, Rt - 0.95 * sz), a1 = HALF_PI + 0.07;
     this._circles.push({ x: Math.cos(a1) * (n1 + r1), z: -Math.sin(a1) * (n1 + r1), r: r1 });
     if (this.bites >= 2) {
-      var r2 = 1.05 * sz, n2 = 0.06 * sz, a2 = HALF_PI - 0.05;
+      var r2 = 1.7 * sz, n2 = 0.08 * sz, a2 = HALF_PI - 0.05;
       this._circles.push({ x: Math.cos(a2) * (n2 + r2), z: -Math.sin(a2) * (n2 + r2), r: r2 });
     }
   };
@@ -715,10 +714,13 @@
     }
     if (y < 0) y = 0;
     var clip = this._clip(theta, y);
-    if (info) info.clipped = rho > clip ? rho - clip : 0;
-    if (rho > clip) {   // 断面はぽろぽろ
-      rho = clip - 0.0007 * (0.5 + 0.5 * noise3(ct * clip * 900, y * 900, st * clip * 900));
-    }
+    if (clip < Infinity) {
+      var k = 0.16 * this.size, hh = Math.max(k - Math.abs(rho - clip), 0) / k;
+      var nr = Math.min(rho, clip) - hh * hh * k * 0.25;   // かじり跡の角を丸める
+      if (rho > clip - k * 0.5) nr -= 0.0007 * (0.5 + 0.5 * noise3(ct * clip * 900, y * 900, st * clip * 900)) * clamp((rho - clip) / k + 0.5, 0, 1);
+      if (info) info.clipped = Math.max(0, rho - nr);
+      rho = Math.max(0, nr);
+    } else if (info) info.clipped = 0;
     out.set(rho * ct, y, -rho * st);
     return out;
   };
@@ -945,14 +947,20 @@
     var f = this._f, k = this.size / 0.032 * 0.95;
     var topY = this._eval(0, 0, _v1).y;
     var sink = smooth(0, 0.25, f);
-    this.piece.scale.setScalar(k * lerp(1, 0.85, sink));
+    this.piece.scale.setScalar(k * 1.1 * lerp(1, 0.85, sink));
     this.piece.position.set(0, topY - 0.0028 * k - sink * 0.012 * k, 0);
     this.piece.visible = f < 0.25 && this.bites === 0;
   };
   BP._buildCore = function () {
     if (this.core) { this.inner.remove(this.core); disposeTree(this.core); this.core = null; }
     if (!this.filling || this.bites <= 0 || this.bites >= 3) return;
-    var src = createFillingPiece(this.filling, (this.seed % 7) + 1);
+    var src;
+    if (this.filling === 'ume') src = createFillingPiece('ume', (this.seed % 7) + 1);
+    else {   // 断面用は詰まった塊に
+      src = new THREE.Group();
+      if (this.filling === 'sake') src.add(new THREE.Mesh(sakeGeometry(70, 0.0105, 0.009, 17), sakeMaterial()));
+      else src.add(new THREE.Mesh(kombuGeometry(80, 0.0105, 0.008, 27), kombuMaterial()));
+    }
     var k = this.size / 0.032 * 1.25, self = this;
     var M = new THREE.Matrix4().compose(new THREE.Vector3(0, this._H * 0.64 - 0.0075 * k * 0.5, -0.16 * this.size), new THREE.Quaternion(), new THREE.Vector3(k, k, k));
     var core = new THREE.Group(); core.name = 'fillingCore';
@@ -1074,7 +1082,7 @@
     var geo = new THREE.BufferGeometry(), pos = new Float32Array((NRp + 1) * NAp * 3), idx = [];
     for (var j = 0; j < NRp; j++) for (var i = 0; i < NAp; i++) {
       var a = j * NAp + i, b = (j + 1) * NAp + i, c = j * NAp + (i + 1) % NAp, d = (j + 1) * NAp + (i + 1) % NAp;
-      idx.push(a, c, b, c, d, b);
+      idx.push(a, b, c, c, b, d);
     }
     geo.setAttribute('position', new THREE.BufferAttribute(pos, 3)); geo.setIndex(idx);
     var mesh = new THREE.Mesh(geo, riceMaterial()); mesh.receiveShadow = true; mesh.castShadow = false;
@@ -1166,7 +1174,8 @@
     createPotRice: createPotRice,
     createGrain: createGrain,
     sampleOutline: sampleOutline,
-    Body: Body
+    Body: Body,
+    warm: function () { try { riceMaterial(); noriMaterial(); grainGeo(); grainMaterial(); umeMaterial(); sakeMaterial(); kombuMaterial(); baseOutlines(); } catch (e) { } }
   };
   Object.defineProperty(G.Rice, 'material', { get: riceMaterial, enumerable: true });
   Object.defineProperty(G.Rice, 'noriMaterial', { get: noriMaterial, enumerable: true });

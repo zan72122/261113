@@ -36,7 +36,7 @@
   /* ------------------------------------------------------------------ */
   var SPECS = {
     mama: {
-      cell: 0.0029,
+      cell: 0.0034,
       palmLen: 0.088, length: 0.170, width: 0.080, thick: 0.027,
       fingers: [
         { mcp: [-0.0270, 0.0030, -0.0835], fan: -0.085, fanC: -0.020, fanO: -0.30, conv: 0.03, L: [0.0335, 0.0210, 0.0172], R: [0.0086, 0.0079, 0.0072, 0.0066], km: 0.0098 },
@@ -52,13 +52,13 @@
       wrist: { z0: -0.024, z1: 0.020, r0: 0.0272, r1: 0.0258, sy: 0.64 },
       arm: [[0, 0.0262, 0.0167], [0.05, 0.0288, 0.0200], [0.12, 0.0322, 0.0246], [0.22, 0.0345, 0.0276], [0.40, 0.0400, 0.0330]],
       skinLen: 0.22, sleeveEase: 0.016,
-      nail: { len: 0.60, white: 0.13, lift: 0.00036 },
+      nail: { len: 0.60, white: 0.13, lift: 0.00050 },
       kPalm: 0.011, kStub: 0.0055,
-      colBase: col(236, 199, 176), colPalm: col(240, 193, 178), colTip: col(229, 160, 148), colKnuck: col(214, 160, 145),
-      colNail: col(240, 191, 184), colNailTip: col(250, 238, 230)
+      colBase: col(232, 186, 158), colPalm: col(236, 176, 160), colTip: col(224, 142, 128), colKnuck: col(206, 140, 122),
+      colNail: col(236, 168, 160), colNailTip: col(250, 236, 226)
     },
     child: {
-      cell: 0.0021,
+      cell: 0.0025,
       palmLen: 0.061, length: 0.115, width: 0.058, thick: 0.023,
       fingers: [
         { mcp: [-0.0198, 0.0024, -0.0575], fan: -0.090, fanC: -0.020, fanO: -0.30, conv: 0.03, L: [0.0212, 0.0134, 0.0124], R: [0.0066, 0.0063, 0.0060, 0.0057], km: 0.0071 },
@@ -74,10 +74,10 @@
       wrist: { z0: -0.017, z1: 0.016, r0: 0.0208, r1: 0.0200, sy: 0.68 },
       arm: [[0, 0.0203, 0.0137], [0.04, 0.0216, 0.0156], [0.10, 0.0240, 0.0184], [0.16, 0.0254, 0.0200], [0.32, 0.0290, 0.0240]],
       skinLen: 0.16, sleeveEase: 0.011,
-      nail: { len: 0.52, white: 0.04, lift: 0.00026 },
+      nail: { len: 0.54, white: 0.05, lift: 0.00036 },
       kPalm: 0.0085, kStub: 0.0045,
-      colBase: col(242, 204, 183), colPalm: col(246, 196, 185), colTip: col(238, 160, 152), colKnuck: col(230, 168, 156),
-      colNail: col(243, 196, 190), colNailTip: col(250, 236, 230)
+      colBase: col(240, 192, 166), colPalm: col(244, 180, 166), colTip: col(236, 140, 128), colKnuck: col(226, 148, 132),
+      colNail: col(242, 176, 170), colNailTip: col(250, 234, 228)
     }
   };
 
@@ -529,12 +529,12 @@
     for (i = 0; i < sn.pos.length; i++) { P.push(sn.pos[i]); Nn.push(sn.nor[i]); }
     for (i = 0; i < sn.pos.length / 3; i++) VCH.push(-1);
     for (i = 0; i < sn.idx.length; i++) IDX.push(sn.idx[i]);
-    var nRad = quality() === 'low' ? 14 : 18;
+    var nRad = quality() === 'low' ? 14 : 16;
     var tubeInfo = [];
     function addTube(ch, boneM) {
       var prof = ch.prof, base = P.length / 3;
       var ss = [];
-      var s0 = -0.0035 * sc, step = 0.0024 * sc;
+      var s0 = -0.0035 * sc, step = 0.0030 * sc;
       for (var s = s0; s < prof.capStart; s += step) ss.push(s);
       ss.push(prof.capStart);
       var nCap = 6;
@@ -553,9 +553,8 @@
           tubePoint(prof, ss[a], phi + ep, FSY, t3); tubePoint(prof, ss[a], phi - ep, FSY, t4);
           da.set(t1[0] - t2[0], t1[1] - t2[1], t1[2] - t2[2]);
           db.set(t3[0] - t4[0], t3[1] - t4[1], t3[2] - t4[2]);
-          nrm.crossVectors(da, db).normalize().negate();
-          // local axis -Z = +s : da ~ -Z ; outward = cross(Ps,Pphi) with Ps = -da? keep sign check below
-          if (nrm.x * tmp[0] + nrm.y * (tmp[1]) < 0 && ss[a] < prof.capStart) nrm.negate();
+          nrm.crossVectors(da, db).normalize(); // Ps x Pphi = outward
+          if (nrm.x * tmp[0] + nrm.y * tmp[1] < 0 && ss[a] < prof.capStart) nrm.negate();
           nrm.applyMatrix3(rotM).normalize();
           Nn.push(nrm.x, nrm.y, nrm.z);
           VCH.push(ch.finger);
@@ -595,7 +594,7 @@
     // --- weights, colors, tip mask ---
     var nv = P.length / 3;
     var skinI = new Uint16Array(nv * 4), skinW = new Float32Array(nv * 4);
-    var COL = new Float32Array(nv * 3), TIP = new Float32Array(nv);
+    var COL = new Float32Array(nv * 3), TIP = new Float32Array(nv), WR = new Float32Array(nv);
     var pv = new THREE.Vector3(), nl = new THREE.Vector3(), lp = new THREE.Vector3();
     var rot3 = bindInv.map(function (m) { return new THREE.Matrix3().setFromMatrix4(m); });
     for (i = 0; i < nv; i++) {
@@ -639,12 +638,17 @@
       if (palmar > 0.3) c0 = mixc(c0, spec.colTip, 0.06 * palmar);
       COL[i * 3] = c0[0]; COL[i * 3 + 1] = c0[1]; COL[i * 3 + 2] = c0[2];
       TIP[i] = sstep(E - (E - ch.cum[3]) * 1.8, E - (E - ch.cum[3]) * 0.4, s) * fing;
+      var wk = 0;
+      for (k = 1; k <= 3; k++) { var wj2 = (k === 1 ? 0.005 : 0.0028) * sc; wk += Math.exp(-Math.pow((s - ch.cum[k] - (k === 1 ? 0.002 * sc : 0)) / wj2, 2)) * (k === 1 ? 0.5 : 1); }
+      if (ch.finger === 4) wk *= 0.6;
+      WR[i] = clamp(wk, 0, 1) * (0.3 + 0.7 * dorsal) * (palmar > 0.5 ? 0.6 : 1);
     }
     var geo = new THREE.BufferGeometry();
     geo.setAttribute('position', new THREE.Float32BufferAttribute(P, 3));
     geo.setAttribute('normal', new THREE.Float32BufferAttribute(Nn, 3));
     geo.setAttribute('color', new THREE.BufferAttribute(COL, 3));
     geo.setAttribute('aTip', new THREE.BufferAttribute(TIP, 1));
+    geo.setAttribute('aWr', new THREE.BufferAttribute(WR, 1));
     geo.setAttribute('skinIndex', new THREE.Uint16BufferAttribute(skinI, 4));
     geo.setAttribute('skinWeight', new THREE.Float32BufferAttribute(skinW, 4));
     geo.setIndex(IDX);
@@ -789,31 +793,62 @@
   /* 材質（共有）                                                         */
   /* ------------------------------------------------------------------ */
   var MAT = {};
-  function skinMaterial(who, glowUniform) {
+  var SKIN_GLSL = [
+    'varying vec3 vBP;', 'varying float vWr;', 'uniform float uDetail;',
+    'float hHash(vec3 p){ p = fract(p * 0.3183099 + 0.1); p *= 17.0; return fract(p.x * p.y * p.z * (p.x + p.y + p.z)); }',
+    'float hNoise(vec3 x){ vec3 i = floor(x); vec3 f = fract(x); f = f * f * (3.0 - 2.0 * f);',
+    '  return mix(mix(mix(hHash(i), hHash(i + vec3(1.0,0.0,0.0)), f.x), mix(hHash(i + vec3(0.0,1.0,0.0)), hHash(i + vec3(1.0,1.0,0.0)), f.x), f.y),',
+    '             mix(mix(hHash(i + vec3(0.0,0.0,1.0)), hHash(i + vec3(1.0,0.0,1.0)), f.x), mix(hHash(i + vec3(0.0,1.0,1.0)), hHash(i + vec3(1.0,1.0,1.0)), f.x), f.y), f.z); }',
+    'vec3 hPerturb(vec3 sp, vec3 n, vec2 dh, float fd){',
+    '  vec3 sx = dFdx(sp); vec3 sy = dFdy(sp);',
+    '  vec3 r1 = cross(sy, n); vec3 r2 = cross(n, sx);',
+    '  float det = dot(sx, r1) * fd;',
+    '  vec3 g = sign(det) * (dh.x * r1 + dh.y * r2);',
+    '  return normalize(abs(det) * n - g); }'
+  ].join('\n');
+  function skinMaterial(who, glowUniform, detail) {
     var m = new THREE.MeshPhysicalMaterial({
       vertexColors: true,
       roughness: who === 'child' ? 0.60 : 0.58,
       metalness: 0,
       sheen: 0.35,
       sheenRoughness: 0.55,
-      sheenColor: new THREE.Color(1.0, 0.72, 0.62),
-      specularIntensity: 0.55,
-      emissive: new THREE.Color(0.030, 0.008, 0.004)
+      sheenColor: new THREE.Color(1.0, 0.70, 0.60),
+      specularIntensity: 0.5,
+      emissive: new THREE.Color(0.034, 0.008, 0.004)
     });
     var u = glowUniform;
+    var uDetail = { value: detail == null ? 1 : detail };
     m.onBeforeCompile = function (sh) {
       sh.uniforms.uGlow = u.uGlow;
       sh.uniforms.uGlowColor = u.uGlowColor;
+      sh.uniforms.uDetail = uDetail;
       sh.vertexShader = sh.vertexShader
-        .replace('#include <common>', '#include <common>\nattribute float aTip;\nvarying float vTip;')
-        .replace('#include <begin_vertex>', '#include <begin_vertex>\nvTip = aTip;');
+        .replace('#include <common>', '#include <common>\nattribute float aTip;\nattribute float aWr;\nvarying float vTip;\nvarying vec3 vBP;\nvarying float vWr;')
+        .replace('#include <begin_vertex>', '#include <begin_vertex>\nvTip = aTip; vBP = position; vWr = aWr;');
       sh.fragmentShader = sh.fragmentShader
-        .replace('#include <common>', '#include <common>\nuniform float uGlow;\nuniform vec3 uGlowColor;\nvarying float vTip;')
+        .replace('#include <common>', '#include <common>\nuniform float uGlow;\nuniform vec3 uGlowColor;\nvarying float vTip;\n' + SKIN_GLSL)
+        .replace('#include <color_fragment>', '#include <color_fragment>\n' +
+          '{ float mt = hNoise(vBP * 160.0) * 0.6 + hNoise(vBP * 420.0) * 0.4;' +
+          '  diffuseColor.rgb *= 1.0 + (mt - 0.5) * 0.10 * uDetail;' +
+          '  diffuseColor.rgb = mix(diffuseColor.rgb, diffuseColor.rgb * vec3(1.03, 0.94, 0.93), smoothstep(0.55, 0.8, hNoise(vBP * 90.0 + 7.0)) * 0.6 * uDetail); }')
+        .replace('#include <normal_fragment_maps>', '#include <normal_fragment_maps>\n' +
+          'if (uDetail > 0.0) {' +
+          '  float fw = length(fwidth(vBP));' +
+          '  float wr = 0.0;' +
+          '  if (vWr > 0.01) { float n1 = hNoise(vBP * 700.0);' +
+          '    wr = (sin(vBP.z * 5600.0 + n1 * 6.0 + vBP.x * 600.0) * 0.5 + 0.5) * vWr * 0.00005 * (1.0 - smoothstep(0.00018, 0.0006, fw)); }' +
+          '  float pr = (hNoise(vBP * 2400.0) - 0.5) * 0.000010 * (1.0 - smoothstep(0.00007, 0.00025, fw));' +
+          '  float so = (hNoise(vBP * 380.0) - 0.5) * 0.00004 * (1.0 - smoothstep(0.0005, 0.0018, fw));' +
+          '  float hh = (wr + pr + so) * uDetail;' +
+          '  normal = hPerturb(-vViewPosition, normal, vec2(dFdx(hh), dFdy(hh)), faceDirection);' +
+          '  roughnessFactor = clamp(roughnessFactor + (hNoise(vBP * 300.0) - 0.5) * 0.12 * uDetail + vWr * 0.06, 0.3, 0.9);' +
+          '}')
         .replace('#include <emissivemap_fragment>', '#include <emissivemap_fragment>\n' +
-          // やわらかい透け感: 光の当たらない側をほんのり赤く
           'totalEmissiveRadiance += uGlowColor * (uGlow * vTip * vTip);');
     };
-    m.customProgramCacheKey = function () { return 'hand-skin-v1'; };
+    m.customProgramCacheKey = function () { return 'hand-skin-v2'; };
+    m.userData.uDetail = uDetail;
     return m;
   }
   function nailMaterial() {
@@ -1020,7 +1055,7 @@
     this.ss = ss;
     this.cuffEnd = who === 'mama' ? 0.0 : 0.030;
     this.forearm = this._mkMesh(fs.length, this.nr, false, true);
-    this.forearm.material = hand.skinMat;
+    this.forearm.material = skinMaterial(who, hand.uniforms, 0);
     var sleeveKind = who === 'mama' ? 'linen' : 'knit';
     this.sleeve = this._mkMesh(ss.length, this.nr + 6, true, false);
     this.sleeve.material = sleeveMaterial(sleeveKind);
@@ -1057,7 +1092,7 @@
     for (var a = 0; a < rings - 1; a++) for (var b = 0; b < nr; b++) {
       var b1 = (b + 1) % nr;
       var A = a * nr + b, B = (a + 1) * nr + b, C = a * nr + b1, D = (a + 1) * nr + b1;
-      idx.push(A, B, C, B, D, C);
+      idx.push(A, C, B, B, C, D);
     }
     geo.setIndex(idx);
     geo.boundingSphere = new THREE.Sphere(new THREE.Vector3(), 10);
@@ -1122,7 +1157,6 @@
       if (sa > 1e-6) { var ang = Math.asin(clamp(sa, -1, 1)); ax.normalize(); U.applyAxisAngle(ax, ang); V.applyAxisAngle(ax, ang); }
       // re-orthonormalize
       U.addScaledVector(T, -U.dot(T)).normalize(); V.crossVectors(T, U).normalize();
-      if (V.dot(uy) < 0 && k < nA + 2) V.negate();
       prevT.copy(T);
       tp[k * 3] = pts[k].x; tp[k * 3 + 1] = pts[k].y; tp[k * 3 + 2] = pts[k].z;
       tt[k * 3] = T.x; tt[k * 3 + 1] = T.y; tt[k * 3 + 2] = T.z;

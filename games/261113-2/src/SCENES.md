@@ -96,5 +96,11 @@
 - おしまい（約5秒・やさしく）: `ending` のフレーズ、ママの手が子どもの手の甲を ぽん ぽん と やさしくなでる（`tap` 小）、皿のちびおにぎりたちの上に きらめきが ゆっくり舞う、カメラはゆっくり皿へ。`state.round++`、保存。
 - 次の回: `G.W.resetRound()`（ふたが閉まる `lidClose`、盆と皿が入れ替わる `slide`、手は待機）→ `state.mamaT = G.W.SHAPES[round % 3]`、`state.mamaFilling` も次へ → `G.Director.go('S0')`。ボタンがまた光る。ちびおにぎりは皿に残り、次の S5 で皿と一緒に戻ってくる。
 
+## 実装メモ（第1波の実物に合わせる）
+- `body.squeeze(t, amount)` は 1回で `formed += amount*0.6 + 0.02`。子どもは amount 0.34〜0.42 で約4回。ママのお手本は amount 0.55 を3回で完成。ちびは `squeeze(t, 1)` を2回続けて呼んで一発完成に。完成判定は `formed >= 0.999`。
+- 読み込み時に `G.Rice.warm()` を呼んでおく（初回の引っかかり防止）。`body.topY()` で上面の高さが取れる。
+- 位置は `G.W.P`・`G.W.props.*` の world 位置・`board.topY`・アンカーから取る（数値の直書きをしない）。
+- 湯のみ（`props.cups`）は使わない。
+
 ## 開発用（UIなし）
 - scenes_b.js は `G.Scenes.debugAfter(opts)` を用意: S3 終了時の引き継ぎ状態を直接作って `S4` へ（自分の場面の確認用。画面には何も出さない）。
