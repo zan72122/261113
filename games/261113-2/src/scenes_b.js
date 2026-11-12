@@ -730,7 +730,7 @@
       var finish = function () {
         if (++gathered < 2) return;
         c.grains.forEach(removeObj); c.grains = [];
-        var tiny = G.Rice.createBody({ size: 0.012 });
+        var tiny = G.Rice.createBody({ size: 0.015 });
         tiny.group.position.copy(bc);
         tiny.group.scale.setScalar(0.4);
         G.scene.add(tiny.group);

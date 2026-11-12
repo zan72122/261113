@@ -431,6 +431,9 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
         window.addEventListener('blur', pause);
         window.addEventListener('focus', resume);
         window.addEventListener('pageshow', resume);
+        // safety net: a touch always wakes the game (e.g. a blur with no matching focus on iOS)
+        window.addEventListener('pointerdown', resume, true);
+        window.addEventListener('touchstart', resume, { capture: true, passive: true });
         window.addEventListener('resize', function () { if (renderer) handleResize(false); });
         window.addEventListener('orientationchange', function () { if (renderer) handleResize(true); });
         return true;
@@ -7860,7 +7863,7 @@ function(t,e){"object"==typeof exports&&"undefined"!=typeof module?e(exports):"f
       var finish = function () {
         if (++gathered < 2) return;
         c.grains.forEach(removeObj); c.grains = [];
-        var tiny = G.Rice.createBody({ size: 0.012 });
+        var tiny = G.Rice.createBody({ size: 0.015 });
         tiny.group.position.copy(bc);
         tiny.group.scale.setScalar(0.4);
         G.scene.add(tiny.group);
