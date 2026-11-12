@@ -384,6 +384,9 @@
         window.addEventListener('blur', pause);
         window.addEventListener('focus', resume);
         window.addEventListener('pageshow', resume);
+        // safety net: a touch always wakes the game (e.g. a blur with no matching focus on iOS)
+        window.addEventListener('pointerdown', resume, true);
+        window.addEventListener('touchstart', resume, { capture: true, passive: true });
         window.addEventListener('resize', function () { if (renderer) handleResize(false); });
         window.addEventListener('orientationchange', function () { if (renderer) handleResize(true); });
         return true;

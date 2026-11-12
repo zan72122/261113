@@ -1046,7 +1046,7 @@
       function pose(h, gap) {
         var sg = h.sign || (h.side === 'L' ? -1 : 1);
         var q = qSide(h, 0.35, 0.15, -PI / 2 * 0.92);
-        var tip = c.clone().add(V(sg * gap, 0.085, 0.03));
+        var tip = c.clone().add(V(sg * gap, 0.085, -0.10));   // 自分のおにぎりの奥で拍手（おにぎりを隠さない）
         return { pos: tip.sub(V(0, 0, -0.07).applyQuaternion(q)), rot: q };
       }
       function step(n) {
