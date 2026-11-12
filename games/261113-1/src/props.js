@@ -347,7 +347,7 @@
     basket = grp;
   }
   function buildClips() {
-    var cols = [0x98c3d3, 0xe9dfc3];
+    var cols = [0x3f8fcf, 0xe8859f];   // 本物によくある 青 と ピンク（白いかごの中でも見つけやすい）
     var gA = leverGeo(1), gB = leverGeo(-1), gS = springGeo();
     var matM = new THREE.MeshStandardMaterial({ color: 0xc9ccd0, metalness: 0.9, roughness: 0.3 });
     qOn = new THREE.Quaternion().setFromAxisAngle(AX, PI);

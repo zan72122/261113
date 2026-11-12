@@ -26,8 +26,8 @@
   var VIEW = G.VIEW = {
     bed: { look: [-0.05, 0.80, 1.30], dir: [0, 0.27, 1], w: 1.75, h: 3.0, fovP: 64, fovL: 50 },
     door: { look: [0, 1.15, 0.0], dir: [0, 0.06, 1], w: 1.3, h: 2.0, fovP: 64, fovL: 50 },
-    balcony: { look: [0, 1.30, -1.40], dir: [0, 0.04, 1], w: 2.05, h: 3.0, fovP: 66, fovL: 48 },
-    bedEve: { look: [-0.08, 0.45, 1.55], dir: [0, 0.55, 1], w: 1.7, h: 2.5, fovP: 64, fovL: 50 }
+    balcony: { look: [0, 1.25, -1.40], dir: [0, 0.16, 1], w: 1.9, h: 3.0, fovP: 66, fovL: 48 },
+    bedEve: { look: [0.03, 0.35, 1.5], dir: [0, 0.6, 1], w: 1.72, h: 2.3, fovP: 64, fovL: 50 }
   };
 
   var STEPS = ['CURTAIN', 'DOOR', 'FOLD', 'HANG', 'CLIP', 'BEATER', 'BEAT', 'SUN', 'TAKE', 'SPREAD', 'PRESS', 'NIGHT', 'SLEEP'];
@@ -206,7 +206,7 @@
     var used0 = false, used1 = false;
     for (var i = 0; i < 2; i++) {
       var st = P('clipState', i);
-      if (st === 'on' || st === 'drag' && false) { if (S.clipSlot[i] === 0) used0 = true; if (S.clipSlot[i] === 1) used1 = true; }
+      if (st === 'on') { if (S.clipSlot[i] === 0) used0 = true; if (S.clipSlot[i] === 1) used1 = true; }
     }
     var su = L.clipSlots;
     if (used0 && used1) return -1;
@@ -249,7 +249,7 @@
     },
     CLIP: {
       gesture: 'drag',
-      at: function () { var i = basketClip(); return i < 0 ? null : P('clipPoint', i, hA); },
+      at: function () { var i = basketClip(); if (i < 0 || !P('clipPoint', i, hA)) return null; hA.y += 0.07; return hA; },
       to: function () { var s = freeSlot(null); return s < 0 ? null : F('pointAt', L.clipSlots[s], 0.5, hB); },
       glow: function (g) { P('clipGlow', g); },
       wiggle: function () { P('clipWiggle'); }
@@ -317,7 +317,7 @@
     mkDrag({
       loop: 'curtainSlide', gain: 1.6,
       move: function (q) {
-        var f = clamp(f0 + open * side * q.dx / (ppm * CUR_TRAVEL), 0, 1);
+        var f = clamp(f0 + side * q.dx / (ppm * CUR_TRAVEL), 0, 1);   // 端が指についてくる
         drag.acc += Math.abs(f - prev);
         if (Math.abs(f - prev) > 1e-4) W('curtainSway', clamp((f - prev) * 6 * side, -0.4, 0.4));
         prev = f;
@@ -533,9 +533,11 @@
     P('beaterSwing', bP);
     var fl = fluffNow();
     snd(fl < 0.45 ? 'beatFlat' : 'beatFluffy', 0.9, 1 + U.rand(-0.06, 0.06));
-    var am = clamp(rem * 14, 0.08, 1);
-    X('dust', bP, bN, am);
-    snd('dustPuff', 0.25 + 0.75 * am);
+    if (dustLeft() > 0.08 || rem > 0.004) {
+      var am = clamp(rem * 22, 0.3, 1);      // 汚れが残るうちは、はっきり見える ほこりの煙
+      X('dust', bP, bN, am);
+      snd('dustPuff', 0.25 + 0.75 * am);
+    } else X('air', bP, 0.5);                 // きれいになったら空気だけ ぽふっ
     G.cam.shake(0.25);
     if (fl >= 0.6 && Math.random() < 0.35) X('feather', bP, 2);
     S.hits++;
@@ -577,7 +579,7 @@
   function cloudDown(p) {
     if (!W('cloudPos', undefined, tC)) return false;
     var k0 = S.cloudK;
-    W('cloudPos', k0 + 1, tD);
+    W('cloudPos', k0 > 0 ? k0 - 1 : k0 + 1, tD);
     G.toScreen(tC, so1); var sx = so1.x, sy = so1.y, beh = so1.behind;
     G.toScreen(tD, so2);
     if (beh) return false;

@@ -603,9 +603,9 @@
     opts: null, idle: 0, nextWig: 3.5, vis: 0, nullPrev: true,
     inDemo: false, demoT: 0, handMul: 0, ripT: 9, objs: null
   };
-  var HAND_PX = 74;           // 手の画面上の高さ（CSS px）
-  var HAND_MAX = 0.6;         // 手の不透明度の上限
-  var SPARK_N = 6;
+  var HAND_PX = 92;           // 手の画面上の高さ（CSS px）
+  var HAND_MAX = 0.74;         // 手の不透明度の上限
+  var SPARK_N = 7;
 
   function hintTouch() {
     H.idle = 0; H.nextWig = 3.5;
@@ -712,7 +712,7 @@
     // やわらかい輪郭の影を付けて合成
     var c = document.createElement('canvas'); c.width = c.height = S;
     var x = c.getContext('2d');
-    x.shadowColor = 'rgba(70,40,25,0.38)'; x.shadowBlur = 10; x.shadowOffsetY = 3;
+    x.shadowColor = 'rgba(60,32,18,0.62)'; x.shadowBlur = 13; x.shadowOffsetY = 3;
     x.drawImage(m, 0, 0);
     x.shadowColor = 'rgba(0,0,0,0)';
     var t = new T.CanvasTexture(c);
@@ -736,8 +736,19 @@
       var sp = new T.Sprite(mat);
       sp.renderOrder = 1000; sp.visible = false; sp.frustumCulled = false;
       grp.add(sp);
-      sparks.push({ sp: sp, t: -U.rand(0, 1.2), life: 1.4, ang: 0, r: 0.15, size: 0.05, rot: 0, rv: 0, dz: 0 });
+      sparks.push({ sp: sp, t: -U.rand(0, 1.2), life: 1.4, ang: 0, r: 40, size: 36, rot: 0, rv: 0, dz: 0 });
     }
+    var hc = document.createElement('canvas'); hc.width = hc.height = 128;
+    var hx = hc.getContext('2d'), hg = hx.createRadialGradient(64, 64, 0, 64, 64, 64);
+    hg.addColorStop(0, 'rgba(255,255,255,0.85)'); hg.addColorStop(0.3, 'rgba(255,255,255,0.4)');
+    hg.addColorStop(0.65, 'rgba(255,255,255,0.1)'); hg.addColorStop(1, 'rgba(255,255,255,0)');
+    hx.fillStyle = hg; hx.fillRect(0, 0, 128, 128);
+    var halo = new T.Sprite(new T.SpriteMaterial({
+      map: new T.CanvasTexture(hc), color: 0xffe9bf, transparent: true, opacity: 0, blending: T.AdditiveBlending,
+      depthTest: false, depthWrite: false, toneMapped: false, fog: false
+    }));
+    halo.renderOrder = 999; halo.visible = false; halo.frustumCulled = false;
+    grp.add(halo);
     var ring = new T.Sprite(new T.SpriteMaterial({
       map: makeRingTex(), color: 0xffffff, transparent: true, opacity: 0,
       depthTest: false, depthWrite: false, toneMapped: false, fog: false
@@ -753,7 +764,7 @@
     hand.renderOrder = 1002; hand.visible = false; hand.frustumCulled = false;
     grp.add(hand);
     H.objs = {
-      grp: grp, sparks: sparks, ring: ring, hand: hand,
+      grp: grp, sparks: sparks, ring: ring, hand: hand, halo: halo,
       at: new T.Vector3(), to: new T.Vector3(), tip: new T.Vector3(), ringPos: new T.Vector3(), tmp: new T.Vector3()
     };
     return H.objs;
@@ -762,17 +773,17 @@
     var o = H.objs;
     if (!o) return;
     for (var i = 0; i < o.sparks.length; i++) o.sparks[i].sp.visible = false;
-    o.ring.visible = false; o.hand.visible = false;
+    o.ring.visible = false; o.hand.visible = false; if (o.halo) o.halo.visible = false;
   }
   function respawn(s, first) {
     s.t = first ? -U.rand(0, 1.0) : -U.rand(0.15, 0.9);
     s.life = U.rand(1.1, 1.7);
     s.ang = U.rand(0, Math.PI * 2);
-    s.r = U.rand(0.12, 0.18);
-    s.size = U.rand(0.035, 0.06);
+    s.r = U.rand(26, 52);
+    s.size = U.rand(26, 46);
     s.rot = U.rand(-0.3, 0.3);
     s.rv = U.rand(-0.25, 0.25);
-    s.dz = U.rand(-0.03, 0.03);
+    s.dz = 0;
   }
   function callGlow(opts, g) {
     if (opts && opts.glow) { try { opts.glow(g); } catch (e) { report('hint.glow', e); } }
@@ -868,7 +879,12 @@
     m.right.setFromMatrixColumn(camera.matrixWorld, 0);
     m.up.setFromMatrixColumn(camera.matrixWorld, 1);
     var dist = camera.position.distanceTo(o.at);
-    var f = U.clamp(dist / 2.4, 0.6, 2.2);
+    var f = Math.max(0.08, dist) * 2 * Math.tan(camera.fov * Math.PI / 360) / vh;   // 1 CSS px の世界サイズ
+    var pulse = 0.5 + 0.5 * Math.sin(G.time * 2.6);
+    o.halo.visible = true;
+    o.halo.position.copy(o.at);
+    o.halo.scale.setScalar(f * (150 + 34 * pulse));
+    o.halo.material.opacity = (0.2 + 0.3 * pulse) * H.vis;
     var vis = H.vis;
 
     // きらめき
@@ -887,7 +903,7 @@
       var r = s.r * f;
       sp.position.copy(o.at)
         .addScaledVector(m.right, Math.cos(s.ang) * r)
-        .addScaledVector(m.up, Math.sin(s.ang) * r + 0.012 * f * k);
+        .addScaledVector(m.up, Math.sin(s.ang) * r + 6 * f * k);
       o.tmp.copy(camera.position).sub(o.at).normalize();
       sp.position.addScaledVector(o.tmp, s.dz);
     }

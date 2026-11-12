@@ -155,9 +155,9 @@
   var KF = {
     elev: [24, 58, 16, 38], az: [14, 16, 20, -12],
     sunI: [1.6, 1.6, 1.7, 0.22],
-    hemiI: [0.7, 0.85, 0.55, 0.24], roomDim: [0.13, 0.3, 0.2, 0.2], roomOpen: [0.55, 0.65, 0.42, 0.24],
-    fillI: [0.25, 0.32, 0.28, 0.0], expo: [1.0, 1.0, 1.0, 0.92], lamp: [0, 0, 0, 1.0],
-    curI: [0.55, 0.35, 0.45, 0.2], sunVis: [1, 1, 1, 0], envK: [1, 1, 0.8, 0.25]
+    hemiI: [0.7, 0.85, 0.55, 0.2], roomDim: [0.13, 0.3, 0.2, 0.1], roomOpen: [0.55, 0.65, 0.42, 0.2],
+    fillI: [0.25, 0.32, 0.28, 0.0], expo: [1.0, 1.0, 1.0, 0.72], lamp: [0, 0, 0, 0.9],
+    curI: [0.55, 0.35, 0.45, 0.13], sunVis: [1, 1, 1, 0], envK: [1, 1, 0.8, 0.25]
   };
   var KCH = {
     sunC: [0xffeedb, 0xfff8ee, 0xffae66, 0x9fb6e0],
@@ -398,7 +398,7 @@
     var xin = lerp(GAP, half - L.curtain.bunch, f), Sw = half - xin;
     var p = Sw / PLE, per = CLOTH / PLE;
     var A0 = Math.sqrt(Math.max(per * per - p * p, 0)) / 4;
-    A0 = clamp(A0 * (1 + 0.5 * f), 0.012, 0.06);
+    A0 = clamp(A0 * (0.6 + 0.9 * f), 0.012, 0.06);   // 閉じている時のひだは浅く
     var flare = 0.02 + 0.09 * f, sw = spSway.x, br = S.door * 0.007, zc = CL.z + 0.012;
     var TWO = Math.PI * 2, ri = 0;
     for (var ci = 0; ci < curtains.length; ci++) {
@@ -412,7 +412,7 @@
           var ra = rA[kp] * (1 - fr) + rA[kp + 1] * fr, rp = rP[kp] * (1 - fr) + rP[kp + 1] * fr;
           var w = Math.sin((ph + low2 * 0.12 * rp) * TWO);
           w = (w < 0 ? -1 : 1) * Math.pow(Math.abs(w), 0.8);
-          var A = A0 * (1 + low * 0.28 * ra) * topK;
+          var A = A0 * (1 + (0.22 + low * 0.4) * ra) * topK;
           var x = side * (xin + s * Sw + s * flare * low2);
           var z = zc + A * w + sw * swK * (0.8 + 0.2 * Math.sin(s * 9 + t * 2.1 + side));
           if (br > 0) z += br * swK * Math.sin(t * 1.1 + s * 5 + side * 1.7);
@@ -756,7 +756,8 @@
     '  vec3 col = mix(uTint, uShade, sh * 0.6);\n' +
     '  vec2 d = (vUv - uSunUV) * uAsp; float sp = exp(-dot(d, d) * 5.0);\n' +
     '  float rim = (1.0 - smoothstep(0.08, 0.6, a)) * smoothstep(0.0, 0.12, a);\n' +
-    '  col += uRim * rim * (0.35 + 1.4 * sp) * uCover * (1.0 + uGlow * 0.9);\n' +
+    '  col *= 1.0 - 0.2 * uCover * exp(-dot(d, d) * 2.0) * smoothstep(0.3, 0.9, a);\n' +
+    '  col += uRim * rim * (0.35 + 1.4 * sp) * uCover * (1.0 + uGlow * 1.8);\n' +
     '  col += uRim * sp * a * 0.25 * uCover;\n' +
     '  gl_FragColor = vec4(col, a * uOpacity);\n' +
     '  #include <encodings_fragment>\n}';
@@ -787,7 +788,7 @@
     var uv = cg.attributes.uv;
     for (var i = 0; i < uv.count; i++) uv.setX(i, 1 - uv.getX(i));
     var bt = tex('backdrop');
-    if (bt) { bt.wrapS = bt.wrapT = T.ClampToEdgeWrapping; bt.repeat.set(1, 1); bt.needsUpdate = true; }
+    if (bt) { bt.wrapS = bt.wrapT = T.ClampToEdgeWrapping; bt.repeat.set(1, 1); }
     var am = canvas(64, 256, function (x, w, h) {
       var g = x.createLinearGradient(0, h, 0, 0);
       g.addColorStop(0, '#fff'); g.addColorStop(0.46, '#fff'); g.addColorStop(0.62, '#888'); g.addColorStop(0.86, '#000'); g.addColorStop(1, '#000');
@@ -814,7 +815,7 @@
 
     // 雲（alphaMap 専用のテクスチャを緑チャンネルで読む）
     var ct = tex('cloud', false);
-    if (ct) { ct.wrapS = ct.wrapT = T.ClampToEdgeWrapping; ct.needsUpdate = true; }
+    if (ct) { ct.wrapS = ct.wrapT = T.ClampToEdgeWrapping; }
     else {
       ct = ctex(canvas(256, 170, function (x, w, h) {
         x.fillStyle = '#000'; x.fillRect(0, 0, w, h);
@@ -925,11 +926,12 @@
     sunDisc.visible = sunGlow.visible = sv > 0.01;
     sunDisc.position.copy(S.sunPos); sunGlow.position.copy(S.sunPos);
     sunDisc.scale.setScalar(sd * 0.06);
-    var gs = sd * 0.4 * lerp(0.55, 1.2, e);
+    var cg = S.cloudGlow * (1 - e);            // 雲に隠れている時、ふちから日がもれて脈打つ（次に触る物の手がかり）
+    var gs = sd * 0.4 * lerp(0.55, 1.2, e) * (1 + 2.3 * cg);
     sunGlow.scale.setScalar(gs);
     kc('sunC', _col); _col.lerp(_col2.setRGB(1, 1, 1), 0.6);
     sunDisc.material.color.copy(_col).multiplyScalar(sv * lerp(0.3, 1.0, e));
-    sunGlow.material.color.copy(_col).multiplyScalar(sv * lerp(0.25, 0.9, e));
+    sunGlow.material.color.copy(_col).multiplyScalar(sv * (lerp(0.25, 0.9, e) + 0.55 * cg));
     // 雲
     kc('cloudT', cloudU.uTint.value); kc('cloudS', cloudU.uShade.value); kc('rim', cloudU.uRim.value);
     cloudU.uCover.value = (1 - e) * sv; cloudU.uGlow.value = S.cloudGlow;

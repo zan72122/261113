@@ -636,12 +636,12 @@
     if (!pts || !pos) return;
     var am = clamp(amount == null ? 1 : amount, 0, 1.5);
     var nx = normal ? normal.x : 0, ny = normal ? normal.y : 1, nz = normal ? normal.z : 0;
-    var n = Math.max(2, Math.round(40 * am)), sz = 0.6 + 0.4 * Math.min(am, 1), i;
+    var n = Math.max(6, Math.round(46 * am)), sz = 0.7 + 0.4 * Math.min(am, 1), i;
     for (i = 0; i < n; i++) {
       var sp = rr(0.5, 1.4) * (0.6 + 0.6 * Math.min(am, 1)), br = rr(0.9, 1.08);
       spawn(0, pos.x + rr(-0.05, 0.05), pos.y + rr(-0.05, 0.05), pos.z + rr(-0.05, 0.05),
         nx * sp + rr(-0.35, 0.35), ny * sp + rr(-0.25, 0.35), nz * sp + rr(-0.35, 0.35),
-        rr(1.5, 2.5), rr(0.06, 0.12) * sz, rr(0.25, 0.45) * sz, rr(0.25, 0.4), 0.80 * br, 0.76 * br, 0.70 * br, 0);
+        rr(1.6, 2.7), rr(0.08, 0.14) * sz, rr(0.3, 0.5) * sz, rr(0.42, 0.62), 0.66 * br, 0.60 * br, 0.52 * br, 0);
     }
     var ns = Math.max(1, Math.round(n / 3));
     for (i = 0; i < ns; i++) {
