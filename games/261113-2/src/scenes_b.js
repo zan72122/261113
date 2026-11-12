@@ -269,7 +269,7 @@
   CP.moveGrab = function (ev) {
     var g = this.grab; if (!g || !ev) return;
     var p = ev.onPlane(g.o.planeY + g.o.lift);
-    if (p) { p.x = clamp(p.x, -0.32, 0.32); p.z = clamp(p.z, -0.52, 0.24); g.target.copy(p); }
+    if (p) { p.x = clamp(p.x, -0.28, 0.28); p.z = clamp(p.z, g.o.minZ != null ? g.o.minZ : -0.42, 0.22); g.target.copy(p); }
   };
   CP.upGrab = function (ev) {
     var g = this.grab; if (!g) return;
@@ -490,7 +490,7 @@
       c.noriState = 'child';
       var hold = { piv: piv, hand: cR, q: qDir(V(0, -0.12, -1)), flutter: true };
       c.startGrab({
-        hand: cR, anchor: 'pinch', pose: 'pinch', q: qp, obj: piv, lift: 0.045, planeY: boardTop(), reachDur: 0.16,
+        hand: cR, anchor: 'pinch', pose: 'pinch', q: qp, obj: piv, lift: 0.045, planeY: boardTop(), reachDur: 0.16, minZ: -0.2,
         grabPoint: function () { return piv.getWorldPosition(V()); },
         onCarry: function () { c.nori.push(hold); if (c.dest) c.dest.setStrength(0.7); },
         onDrop: function (p) { S4.drop(c, p, hold); }
@@ -1027,11 +1027,11 @@
               if (kind === 'ume') {
                 snd('sour');
                 G.Cam.shake(0.0045, 0.45);
-                c.tremble(cR, 0.0035, 0.95);
+                c.tremble(cR, 0.005, 0.95);
                 var cL = hs.cL;
                 var qL = sideQ(cL, -0.1, 0.25, 0.2);
-                c.path(cL, { pos: V(cL.restPos.x - 0.01, 0.07, 0.17), q: qL, pose: 'fist', dur: 0.18, onDone: function () {
-                  c.tremble(cL, 0.004, 0.75);
+                c.path(cL, { pos: V(-0.07, 0.075, 0.13), q: qL, pose: 'fist', dur: 0.18, onDone: function () {
+                  c.tremble(cL, 0.0055, 0.75);
                   c.rest(cL, 0.4, 0.75);
                 } });
               } else if (kind === 'kombu') snd('yum', { pitch: 0.8 });
@@ -1175,12 +1175,12 @@
       // child's hand comes to rest on the board, mama pats the back of it
       var bc = boardCenter();
       var qc = sideQ(cR, -0.12, 0.12, 0);
-      var palmAt = V(bc.x + 0.035, bc.y + 0.004, bc.z + 0.035);
+      var palmAt = V(bc.x + 0.03, bc.y + 0.004, bc.z - 0.035);
       c.path(cR, { pos: wristFor(cR, 'palm', P_PAT, qc, palmAt), q: qc, pose: P_PAT, dur: 0.7 });
-      var qm = sideQ(mR, -0.32, 0.5, 0.05);
+      var qm = sideQ(mR, -0.3, 0.55, 0.05);
       c.wait(0.75, function () {
-        var back = cR.root.position.clone().add(V(0.0, 0.026, -0.03));
-        var w0 = wristFor(mR, 'palm', P_PAT, qm, back.clone().add(V(0, 0.012, 0)));
+        var back = wpos(cR.anchors.palm).add(V(0.004, 0.024, 0.006));
+        var w0 = wristFor(mR, 'palm', P_PAT, qm, back.clone().add(V(0, 0.010, 0)));
         c.path(mR, { pos: w0, q: qm, pose: P_PAT, dur: 0.6, onDone: function () {
           var n = 0;
           var pat = function () {
@@ -1204,9 +1204,9 @@
         if (++nTick < 9) c.wait(0.45, tick);
       };
       c.wait(0.4, tick);
-      c.wait(0.5, function () {
+      c.wait(2.2, function () {
         var pc = plateCenter();
-        G.Cam.frame({ cx: pc.x, cz: pc.z + 0.03, w: 0.30, d: 0.36, pad: 0.015, dur: 3.2, ease: 'inOut' });
+        G.Cam.frame({ cx: pc.x, cz: pc.z + 0.03, w: 0.30, d: 0.36, pad: 0.015, dur: 2.4, ease: 'inOut' });
       });
       c.wait(4.9, function () { S7.cleanup(c); });
     },
@@ -1214,7 +1214,8 @@
     cleanup: function (c) {
       var W = Wd(), hs = HS(), mL = hs.mL, mR = hs.mR, pr = props();
       c.phase = 'cleanup';
-      frameOf('scoop', 1.4);
+      // tight on cooker + tray: mama's long reach stays natural (her elbows stay out of view)
+      G.Cam.frame({ cx: 0, cz: -0.47, w: 0.30, d: 0.40, pad: 0.015, dur: 1.3, ease: 'inOut' });
       snd('slide');
       slideWith(c, mR, pr.plate, V(0.128, 0.022, 0.0), W.P.plateOut, 0.85, 0.62, null, 0.12);
       pr.tray.visible = true;

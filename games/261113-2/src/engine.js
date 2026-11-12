@@ -847,7 +847,7 @@
       var arr = Array.isArray(orig) ? orig : [orig];
       var clones = arr.map(function (m) {
         if (!m || !m.emissive) return m;
-        var c = m.clone(); c.userData.__pulseBase = m.emissive.clone(); return c;
+        var c = m.clone(); c.onBeforeCompile = m.onBeforeCompile; c.customProgramCacheKey = m.customProgramCacheKey; c.userData.__pulseBase = m.emissive.clone(); return c;
       });
       n.material = Array.isArray(orig) ? clones : clones[0];
       entries.push({ mesh: n, orig: orig, clones: clones });
