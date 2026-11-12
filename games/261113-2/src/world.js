@@ -25,13 +25,13 @@
   var PLATE_SCALE = 0.92;     // 0.27 plate -> ~0.25 so it sits between cooker and mama's board
 
   var FRAMES = {
-    cooker: { cx: 0, cz: -0.60, w: 0.30, d: 0.42 },
-    scoop: { cx: 0, cz: -0.28, w: 0.34, d: 0.94 },
-    fill: { cx: 0, cz: -0.11, w: 0.34, d: 0.60 },
-    shape: { cx: 0, cz: -0.025, w: 0.30, d: 0.44 },
-    nori: { cx: 0, cz: -0.025, w: 0.30, d: 0.44 },
-    plate: { cx: 0, cz: -0.15, w: 0.32, d: 0.66 },
-    eat: { cx: 0, cz: -0.19, w: 0.32, d: 0.58 }
+    cooker: { cx: 0, cz: -0.60, w: 0.27, d: 0.36, pad: 0.015 },
+    scoop: { cx: 0, cz: -0.28, w: 0.30, d: 0.94, pad: 0.015 },
+    fill: { cx: 0, cz: -0.11, w: 0.30, d: 0.60, pad: 0.015 },
+    shape: { cx: 0, cz: -0.025, w: 0.27, d: 0.42, pad: 0.015 },
+    nori: { cx: 0, cz: -0.025, w: 0.27, d: 0.42, pad: 0.015 },
+    plate: { cx: 0, cz: -0.15, w: 0.29, d: 0.66, pad: 0.015 },
+    eat: { cx: 0, cz: -0.19, w: 0.29, d: 0.58, pad: 0.015 }
   };
 
   var SHAPES = [0.5, 1, 0];
@@ -311,7 +311,7 @@
     }
     layoutMinis();
 
-    if (G.Cam) G.Cam.frame({ cx: FRAMES.cooker.cx, cz: FRAMES.cooker.cz, w: FRAMES.cooker.w, d: FRAMES.cooker.d, dur: 0 });
+    if (G.Cam) G.Cam.frame({ cx: FRAMES.cooker.cx, cz: FRAMES.cooker.cz, w: FRAMES.cooker.w, d: FRAMES.cooker.d, pad: FRAMES.cooker.pad, dur: 0 });
     return W;
   };
 

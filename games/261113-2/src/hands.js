@@ -36,48 +36,48 @@
   /* ------------------------------------------------------------------ */
   var SPECS = {
     mama: {
-      cell: 0.0034,
+      cell: 0.0030,
       palmLen: 0.088, length: 0.170, width: 0.080, thick: 0.027,
       fingers: [
-        { mcp: [-0.0270, 0.0030, -0.0835], fan: -0.085, fanC: -0.020, fanO: -0.30, conv: 0.03, L: [0.0335, 0.0210, 0.0172], R: [0.0086, 0.0079, 0.0072, 0.0066], km: 0.0098 },
+        { mcp: [-0.0270, 0.0030, -0.0835], fan: -0.085, fanC: -0.020, fanO: -0.30, conv: 0.03, L: [0.0335, 0.0210, 0.0172], R: [0.0086, 0.0079, 0.0072, 0.0066], km: 0.0089 },
         { mcp: [-0.0088, 0.0035, -0.0880], fan: -0.015, fanC: -0.004, fanO: -0.07, conv: -0.01, L: [0.0370, 0.0235, 0.0182], R: [0.0088, 0.0081, 0.0074, 0.0067], km: 0.0100 },
         { mcp: [0.0092, 0.0030, -0.0850], fan: 0.055, fanC: 0.012, fanO: 0.16, conv: -0.06, L: [0.0345, 0.0225, 0.0172], R: [0.0083, 0.0076, 0.0070, 0.0063], km: 0.0094 },
-        { mcp: [0.0258, 0.0010, -0.0770], fan: 0.130, fanC: 0.030, fanO: 0.38, conv: -0.13, L: [0.0272, 0.0172, 0.0152], R: [0.0073, 0.0067, 0.0061, 0.0056], km: 0.0086 }
+        { mcp: [0.0258, 0.0010, -0.0770], fan: 0.130, fanC: 0.030, fanO: 0.38, conv: -0.13, L: [0.0272, 0.0172, 0.0152], R: [0.0073, 0.0067, 0.0061, 0.0056], km: 0.0081 }
       ],
       metaBase: 0.0088, metaSy: 0.80,
       thumb: { cmc: [-0.0205, -0.0072, -0.0150], L: [0.0400, 0.0300, 0.0268], R: [0.0118, 0.0099, 0.0094, 0.0085] },
       pad: { c: [0.0020, -0.0042, -0.0500], r: [0.0290, 0.0105, 0.0360] },
       hypo: { c: [0.0250, -0.0040, -0.0420], r: [0.0105, 0.0102, 0.0300] },
       thenar: { r: [0.0150, 0.0118, 0.0240] },
-      wrist: { z0: -0.024, z1: 0.020, r0: 0.0272, r1: 0.0258, sy: 0.64 },
-      arm: [[0, 0.0262, 0.0167], [0.05, 0.0288, 0.0200], [0.12, 0.0322, 0.0246], [0.22, 0.0345, 0.0276], [0.40, 0.0400, 0.0330]],
+      wrist: { z0: -0.024, z1: 0.012, r0: 0.0272, r1: 0.0256, z2: 0.065, r2: 0.0292, sy: 0.64 },
+      arm: [[0, 0.0256, 0.0164], [0.035, 0.0275, 0.0178], [0.08, 0.0300, 0.0212], [0.13, 0.0324, 0.0248], [0.22, 0.0345, 0.0276], [0.40, 0.0400, 0.0330]],
       skinLen: 0.22, sleeveEase: 0.016,
       nail: { len: 0.60, white: 0.13, lift: 0.00050 },
       kPalm: 0.011, kStub: 0.0055,
       colBase: col(232, 186, 158), colPalm: col(236, 176, 160), colTip: col(224, 142, 128), colKnuck: col(206, 140, 122),
-      colNail: col(236, 168, 160), colNailTip: col(250, 236, 226)
+      colNail: col(226, 150, 146), colNailTip: col(250, 238, 228)
     },
     child: {
-      cell: 0.0025,
+      cell: 0.0022,
       palmLen: 0.061, length: 0.115, width: 0.058, thick: 0.023,
       fingers: [
-        { mcp: [-0.0198, 0.0024, -0.0575], fan: -0.090, fanC: -0.020, fanO: -0.30, conv: 0.03, L: [0.0212, 0.0134, 0.0124], R: [0.0066, 0.0063, 0.0060, 0.0057], km: 0.0071 },
+        { mcp: [-0.0198, 0.0024, -0.0575], fan: -0.090, fanC: -0.020, fanO: -0.30, conv: 0.03, L: [0.0212, 0.0134, 0.0124], R: [0.0066, 0.0063, 0.0060, 0.0057], km: 0.0065 },
         { mcp: [-0.0064, 0.0028, -0.0605], fan: -0.018, fanC: -0.004, fanO: -0.07, conv: -0.01, L: [0.0232, 0.0148, 0.0130], R: [0.0068, 0.0065, 0.0061, 0.0058], km: 0.0073 },
         { mcp: [0.0068, 0.0024, -0.0585], fan: 0.060, fanC: 0.012, fanO: 0.17, conv: -0.06, L: [0.0218, 0.0140, 0.0124], R: [0.0064, 0.0061, 0.0058, 0.0055], km: 0.0069 },
-        { mcp: [0.0192, 0.0008, -0.0532], fan: 0.140, fanC: 0.030, fanO: 0.38, conv: -0.13, L: [0.0168, 0.0110, 0.0108], R: [0.0057, 0.0054, 0.0051, 0.0048], km: 0.0062 }
+        { mcp: [0.0192, 0.0008, -0.0532], fan: 0.140, fanC: 0.030, fanO: 0.38, conv: -0.13, L: [0.0168, 0.0110, 0.0108], R: [0.0057, 0.0054, 0.0051, 0.0048], km: 0.0059 }
       ],
       metaBase: 0.0070, metaSy: 0.88,
       thumb: { cmc: [-0.0142, -0.0056, -0.0105], L: [0.0265, 0.0195, 0.0182], R: [0.0090, 0.0078, 0.0074, 0.0068] },
       pad: { c: [0.0015, -0.0038, -0.0345], r: [0.0215, 0.0092, 0.0255] },
       hypo: { c: [0.0178, -0.0034, -0.0290], r: [0.0086, 0.0090, 0.0210] },
       thenar: { r: [0.0112, 0.0095, 0.0170] },
-      wrist: { z0: -0.017, z1: 0.016, r0: 0.0208, r1: 0.0200, sy: 0.68 },
-      arm: [[0, 0.0203, 0.0137], [0.04, 0.0216, 0.0156], [0.10, 0.0240, 0.0184], [0.16, 0.0254, 0.0200], [0.32, 0.0290, 0.0240]],
+      wrist: { z0: -0.017, z1: 0.008, r0: 0.0208, r1: 0.0198, z2: 0.048, r2: 0.0218, sy: 0.68 },
+      arm: [[0, 0.0198, 0.0134], [0.028, 0.0207, 0.0142], [0.06, 0.0224, 0.0164], [0.10, 0.0240, 0.0184], [0.16, 0.0254, 0.0200], [0.32, 0.0290, 0.0240]],
       skinLen: 0.16, sleeveEase: 0.011,
       nail: { len: 0.54, white: 0.05, lift: 0.00036 },
       kPalm: 0.0085, kStub: 0.0045,
       colBase: col(240, 192, 166), colPalm: col(244, 180, 166), colTip: col(236, 140, 128), colKnuck: col(226, 148, 132),
-      colNail: col(242, 176, 170), colNailTip: col(250, 234, 228)
+      colNail: col(236, 160, 156), colNailTip: col(250, 236, 230)
     }
   };
 
@@ -90,13 +90,13 @@
     wall: { curl: [0.035, 0.04, 0.05, 0.06], spread: -0.95, thumbOut: 0.0, thumbCurl: 0.10, thumbOpp: 0.0, arch: 0.05 },
     cup: { curl: [0.40, 0.42, 0.44, 0.46], spread: -0.80, thumbOut: 0.10, thumbCurl: 0.30, thumbOpp: 0.10, arch: 0.55 },
     point: { curl: [0.0, 0.94, 0.97, 0.98], spread: -0.2, thumbOut: 0.30, thumbCurl: 0.55, thumbOpp: 0.70, arch: 0.35 },
-    pinch: { curl: [0.40, 0.42, 0.47, 0.52], spread: -0.2, thumbOut: 0.42, thumbCurl: 0.32, thumbOpp: 0.78, arch: 0.30 },
+    pinch: { curl: [0.58, 0.56, 0.62, 0.68], spread: -0.2, thumbOut: 0.40, thumbCurl: 0.40, thumbOpp: 0.40, arch: 0.30 },
     grip: { curl: [0.72, 0.75, 0.78, 0.80], spread: -0.6, thumbOut: 0.25, thumbCurl: 0.45, thumbOpp: 0.55, arch: 0.45 },
     hold: { curl: [0.36, 0.38, 0.41, 0.45], spread: 0.35, thumbOut: 0.62, thumbCurl: 0.22, thumbOpp: 0.50, arch: 0.40 },
     open: { curl: [0.0, 0.0, 0.0, 0.02], spread: 1.0, thumbOut: 1.0, thumbCurl: 0.0, thumbOpp: 0.0, arch: 0.0 },
     fist: { curl: [1, 1, 1, 1], spread: -0.5, thumbOut: 0.22, thumbCurl: 0.85, thumbOpp: 0.70, arch: 0.6 }
   };
-  var BIND_POSE = { curl: [0, 0, 0, 0], spread: 0, thumbOut: 0.32, thumbCurl: 0, thumbOpp: 0.18, arch: 0 };
+  var BIND_POSE = { curl: [0, 0, 0, 0], spread: 0.45, thumbOut: 0.32, thumbCurl: 0, thumbOpp: 0.18, arch: 0 };
 
   function normPose(p) {
     if (typeof p === 'string') p = POSES[p] || POSES.relaxed;
@@ -297,6 +297,25 @@
       if (k < nz - 1 && i > 0 && j > 0 && (vals[gid(i, j, k + 1)] < 0) !== v0)
         quad(cellV[gid(i - 1, j - 1, k)], cellV[gid(i, j - 1, k)], cellV[gid(i, j, k)], cellV[gid(i - 1, j, k)], !v0);
     }
+    // light Laplacian smoothing (evens out the dual-contour lattice), reprojected below
+    (function () {
+      var nv0 = pos.length / 3, nb = [];
+      for (var v = 0; v < nv0; v++) nb.push([]);
+      for (var q = 0; q < idxs.length; q += 6) {
+        var qa = [idxs[q], idxs[q + 1], idxs[q + 2], idxs[q + 5]];
+        for (var e = 0; e < 4; e++) { var a = qa[e], b = qa[(e + 1) % 4]; if (nb[a].indexOf(b) < 0) nb[a].push(b); if (nb[b].indexOf(a) < 0) nb[b].push(a); }
+      }
+      for (var it = 0; it < 2; it++) {
+        var np = pos.slice();
+        for (v = 0; v < nv0; v++) {
+          var L = nb[v]; if (!L.length) continue;
+          var sx = 0, sy = 0, sz = 0;
+          for (var k = 0; k < L.length; k++) { sx += pos[L[k] * 3]; sy += pos[L[k] * 3 + 1]; sz += pos[L[k] * 3 + 2]; }
+          np[v * 3] = mix(pos[v * 3], sx / L.length, 0.5); np[v * 3 + 1] = mix(pos[v * 3 + 1], sy / L.length, 0.5); np[v * 3 + 2] = mix(pos[v * 3 + 2], sz / L.length, 0.5);
+        }
+        pos = np;
+      }
+    })();
     // project to surface, gradient normals
     var nv = pos.length / 3, nor = new Float32Array(nv * 3), P = new Float32Array(pos);
     var eps = h * 0.25;
@@ -369,18 +388,37 @@
   }
   // surface point of a finger tube in finger-local coords (axis -Z, dorsal +Y)
   function tubePoint(prof, s, phi, sy, out) {
-    var r = prof.r(s), cy = 0, k = 0;
+    var r = prof.r(s);
     if (s > prof.capStart) {
-      k = clamp((s - prof.capStart) / (prof.E - prof.capStart), 0, 1);
+      var k = clamp((s - prof.capStart) / (prof.E - prof.capStart), 0, 1);
       r *= Math.sqrt(Math.max(0, 1 - k * k));
-      cy = prof.Rt * 0.22 * k * k;  // 指先は甲側が平らで腹側が丸い
     }
-    var c = Math.cos(phi), sn = Math.sin(phi);
-    var b = sn > 0 ? sy : sy * (1 + 0.10 * sstep(prof.J[prof.J.length - 1], prof.E, s)); // 指の腹のふくらみ
-    out[0] = r * c;
-    out[1] = cy + r * b * sn;
+    out[0] = r * Math.cos(phi);
+    out[1] = r * sy * Math.sin(phi);
     out[2] = -s;
     return out;
+  }
+  // SDF of the same profiled finger, in the bone frame given by inverse matrix
+  function FingerSDF(prof, boneM, sy, s0) {
+    var inv = boneM.clone().invert().elements;
+    var cs = prof.capStart, E = prof.E, Rt = prof.Rt, cl = E - cs;
+    var ms = Math.min(1, sy);
+    var cap = new Ellip([0, 0, -cs], null, [Rt, Rt * sy, cl]);
+    this.d = function (px, py, pz) {
+      var lx = inv[0] * px + inv[4] * py + inv[8] * pz + inv[12];
+      var ly = inv[1] * px + inv[5] * py + inv[9] * pz + inv[13];
+      var lz = inv[2] * px + inv[6] * py + inv[10] * pz + inv[14];
+      var s = -lz;
+      if (s >= cs) return cap.d(lx, ly, lz);
+      var ss = s < s0 ? s0 : s;
+      var q = Math.sqrt(lx * lx + (ly / sy) * (ly / sy));
+      var d = (q - prof.r(ss)) * ms;
+      if (s < s0) d = Math.max(d, s0 - s);
+      return d;
+    };
+    var o = new THREE.Vector3(0, 0, -s0).applyMatrix4(boneM), e = new THREE.Vector3(0, 0, -E).applyMatrix4(boneM);
+    var R = prof.r(0) * 1.2;
+    this.box = [Math.min(o.x, e.x) - R, Math.min(o.y, e.y) - R, Math.min(o.z, e.z) - R, Math.max(o.x, e.x) + R, Math.max(o.y, e.y) + R, Math.max(o.z, e.z) + R];
   }
 
   /* ------------------------------------------------------------------ */
@@ -406,7 +444,7 @@
       chains.push({
         pts: [v3(metaBaseOf(spec, f)), mp(bindMats[fingerBone(f, 0)]), mp(bindMats[fingerBone(f, 1)]), mp(bindMats[fingerBone(f, 2)]), tip],
         bones: [f < 2 ? 0 : f - 1, fingerBone(f, 0), fingerBone(f, 1), fingerBone(f, 2)],
-        widths: [0.0105 * w, 0.0058 * w, 0.0048 * w],
+        widths: [0.0125 * w, 0.0058 * w, 0.0048 * w],
         shift: [0.0015 * w, 0, 0],
         web: [0.002 * w, 0.015 * w], webJ: 1,
         prof: makeProfile(F.L, F.R), finger: f
@@ -487,35 +525,33 @@
       var dir = M.clone().sub(W), L = dir.length(); dir.normalize();
       var qq = new THREE.Quaternion().setFromUnitVectors(new THREE.Vector3(0, 0, -1), dir);
       core.push(new RCone(W, qq, L, spec.metaBase, F2.km, spec.metaSy));
-      var bq = new THREE.Quaternion().setFromRotationMatrix(bindMats[fingerBone(f, 0)]);
-      var stubLen = F2.L[0] * 0.30;
-      var pr = chains[f].prof;
-      stubs.push(new RCone(M, bq, stubLen, pr.r(0) - 0.00055, pr.r(stubLen) - 0.00055, FSY));
+      stubs.push(new FingerSDF(chains[f].prof, bindMats[fingerBone(f, 0)], FSY, -0.004 * sc));
     }
     core.push(new Ellip(spec.pad.c, null, spec.pad.r));
     core.push(new Ellip(spec.hypo.c, null, spec.hypo.r));
     var Wr = spec.wrist;
     core.push(new RCone(new THREE.Vector3(0, 0, Wr.z1), new THREE.Quaternion(), Wr.z1 - Wr.z0, Wr.r1, Wr.r0, Wr.sy));
+    var foreCone = new RCone(new THREE.Vector3(0, 0, Wr.z2), new THREE.Quaternion(), Wr.z2 - Wr.z1, Wr.r2, Wr.r1, Wr.sy);
     // thumb metacarpal + thenar
     var tqB = new THREE.Quaternion().setFromRotationMatrix(bindMats[15]);
     var Cp = v3(T.cmc);
-    thumbParts.push(new RCone(Cp, tqB, T.L[0], T.R[0], T.R[1] + 0.0004, 0.92));
+    thumbParts.push(new RCone(Cp, tqB, T.L[0], T.R[0], T.R[1] - 0.0004, 0.90));
     var tb = basisFromQ(tqB);
     var thc = Cp.clone().addScaledVector(tb.z, -T.L[0] * 0.42).add(new THREE.Vector3(0.0055 * sc, -0.0038 * sc, 0.002 * sc));
     thumbParts.push(new Ellip([thc.x, thc.y, thc.z], tqB, [spec.thenar.r[0], spec.thenar.r[1], spec.thenar.r[2]]));
-    var tStubLen = T.L[1] * 0.30, tpr = chains[4].prof;
-    var tqP = new THREE.Quaternion().setFromRotationMatrix(bindMats[16]);
-    stubs.push(new RCone(mp(bindMats[16]), tqP, tStubLen, tpr.r(0) - 0.00055, tpr.r(tStubLen) - 0.00055, FSY));
-    var kP = spec.kPalm, kS = spec.kStub;
-    function sdfPalm(x, y, z) {
+    stubs.push(new FingerSDF(chains[4].prof, bindMats[16], FSY, -0.004 * sc));
+    var kP = spec.kPalm, kS = spec.kStub, wristCut = 0.0;
+    function sdfFull(x, y, z) {
       var d = core[0].d(x, y, z);
       for (var i = 1; i < core.length; i++) d = smin(d, core[i].d(x, y, z), i >= 4 ? kP * 1.2 : kP);
+      d = smin(d, foreCone.d(x, y, z), kP * 0.6);
       var dt = smin(thumbParts[0].d(x, y, z), thumbParts[1].d(x, y, z), kP * 0.8);
       d = smin(d, dt, kP * 1.1);
       var r = d;
       for (i = 0; i < stubs.length; i++) r = Math.min(r, smin(d, stubs[i].d(x, y, z), kS));
       return r;
     }
+    function sdfPalm(x, y, z) { return Math.max(sdfFull(x, y, z), z - wristCut); }  // open end hidden inside the forearm
     var box = [1e9, 1e9, 1e9, -1e9, -1e9, -1e9];
     core.concat(thumbParts, stubs).forEach(function (p) {
       for (var k = 0; k < 3; k++) { box[k] = Math.min(box[k], p.box[k]); box[k + 3] = Math.max(box[k + 3], p.box[k + 3]); }
@@ -523,74 +559,29 @@
     var h = spec.cell;
     for (i = 0; i < 3; i++) { box[i] -= h * 2; box[i + 3] += h * 2; }
     var sn = surfaceNets(sdfPalm, box, h);
+    // vertices along the open wrist rim: put them exactly on the uncut surface (so the forearm covers them)
+    (function () {
+      var e = h * 0.25;
+      for (var v = 0; v < sn.pos.length / 3; v++) {
+        var x = sn.pos[v * 3], y = sn.pos[v * 3 + 1], z = sn.pos[v * 3 + 2];
+        if (z < wristCut - h * 1.5) continue;
+        z = Math.min(z, wristCut);
+        var l = Math.sqrt(x * x + y * y) || 1e-6, dx = x / l, dy = y / l, r0 = 0, r1 = 0.06 * sc;
+        for (var it = 0; it < 30; it++) { var rm = (r0 + r1) / 2; if (sdfFull(dx * rm, dy * rm, z) < 0) r0 = rm; else r1 = rm; }
+        sn.pos[v * 3] = dx * r0; sn.pos[v * 3 + 1] = dy * r0; sn.pos[v * 3 + 2] = z;
+        var gx = sdfFull(dx * r0 + e, dy * r0, z) - sdfFull(dx * r0 - e, dy * r0, z);
+        var gy = sdfFull(dx * r0, dy * r0 + e, z) - sdfFull(dx * r0, dy * r0 - e, z);
+        var gz = sdfFull(dx * r0, dy * r0, z + e) - sdfFull(dx * r0, dy * r0, z - e);
+        var gl = Math.sqrt(gx * gx + gy * gy + gz * gz) || 1;
+        sn.nor[v * 3] = gx / gl; sn.nor[v * 3 + 1] = gy / gl; sn.nor[v * 3 + 2] = gz / gl;
+      }
+    })();
 
     // --- assemble geometry arrays ---
     var P = [], Nn = [], IDX = [], VCH = []; // VCH: forced chain (-1 = none)
     for (i = 0; i < sn.pos.length; i++) { P.push(sn.pos[i]); Nn.push(sn.nor[i]); }
     for (i = 0; i < sn.pos.length / 3; i++) VCH.push(-1);
     for (i = 0; i < sn.idx.length; i++) IDX.push(sn.idx[i]);
-    var nRad = quality() === 'low' ? 14 : 16;
-    var tubeInfo = [];
-    function addTube(ch, boneM) {
-      var prof = ch.prof, base = P.length / 3;
-      var ss = [];
-      var s0 = -0.0035 * sc, step = 0.0030 * sc;
-      for (var s = s0; s < prof.capStart; s += step) ss.push(s);
-      ss.push(prof.capStart);
-      var nCap = 6;
-      for (var c = 1; c < nCap; c++) ss.push(prof.capStart + (prof.E - prof.capStart) * Math.sin(c / nCap * PI / 2));
-      var tmp = [0, 0, 0], t1 = [0, 0, 0], t2 = [0, 0, 0], t3 = [0, 0, 0], t4 = [0, 0, 0];
-      var v = new THREE.Vector3(), nrm = new THREE.Vector3(), da = new THREE.Vector3(), db = new THREE.Vector3();
-      var rotM = new THREE.Matrix3().setFromMatrix4(boneM);
-      for (var a = 0; a < ss.length; a++) {
-        for (var b = 0; b < nRad; b++) {
-          var phi = b / nRad * PI * 2;
-          tubePoint(prof, ss[a], phi, FSY, tmp);
-          v.set(tmp[0], tmp[1], tmp[2]).applyMatrix4(boneM);
-          P.push(v.x, v.y, v.z);
-          var e = 1e-4, ep = 0.02;
-          tubePoint(prof, ss[a] + e, phi, FSY, t1); tubePoint(prof, ss[a] - e, phi, FSY, t2);
-          tubePoint(prof, ss[a], phi + ep, FSY, t3); tubePoint(prof, ss[a], phi - ep, FSY, t4);
-          da.set(t1[0] - t2[0], t1[1] - t2[1], t1[2] - t2[2]);
-          db.set(t3[0] - t4[0], t3[1] - t4[1], t3[2] - t4[2]);
-          nrm.crossVectors(da, db).normalize(); // Ps x Pphi = outward
-          if (nrm.x * tmp[0] + nrm.y * tmp[1] < 0 && ss[a] < prof.capStart) nrm.negate();
-          nrm.applyMatrix3(rotM).normalize();
-          Nn.push(nrm.x, nrm.y, nrm.z);
-          VCH.push(ch.finger);
-        }
-      }
-      // pole
-      tubePoint(prof, prof.E, 0, FSY, tmp);
-      tmp[1] = prof.Rt * 0.22;
-      v.set(tmp[0], tmp[1], tmp[2]).applyMatrix4(boneM);
-      var pole = P.length / 3;
-      P.push(v.x, v.y, v.z);
-      nrm.set(0, 0.15, -1).normalize().applyMatrix3(rotM).normalize();
-      Nn.push(nrm.x, nrm.y, nrm.z); VCH.push(ch.finger);
-      for (a = 0; a < ss.length - 1; a++) for (b = 0; b < nRad; b++) {
-        var b1 = (b + 1) % nRad;
-        var A = base + a * nRad + b, B = base + (a + 1) * nRad + b, C = base + a * nRad + b1, D = base + (a + 1) * nRad + b1;
-        IDX.push(A, C, B, B, C, D);
-      }
-      var last = base + (ss.length - 1) * nRad;
-      for (b = 0; b < nRad; b++) IDX.push(last + b, last + (b + 1) % nRad, pole);
-      tubeInfo.push({ base: base, rings: ss.length, ss: ss });
-    }
-    for (f = 0; f < 4; f++) addTube(chains[f], bindMats[fingerBone(f, 0)]);
-    addTube(chains[4], bindMats[16]);
-    // fix winding of tubes against normals (robust)
-    (function () {
-      for (var t = sn.idx.length; t < IDX.length; t += 3) {
-        var a = IDX[t], b = IDX[t + 1], c = IDX[t + 2];
-        var ax = P[b * 3] - P[a * 3], ay = P[b * 3 + 1] - P[a * 3 + 1], az = P[b * 3 + 2] - P[a * 3 + 2];
-        var bx = P[c * 3] - P[a * 3], by = P[c * 3 + 1] - P[a * 3 + 1], bz = P[c * 3 + 2] - P[a * 3 + 2];
-        var fx = ay * bz - az * by, fy = az * bx - ax * bz, fz = ax * by - ay * bx;
-        var nx = Nn[a * 3] + Nn[b * 3] + Nn[c * 3], ny = Nn[a * 3 + 1] + Nn[b * 3 + 1] + Nn[c * 3 + 1], nz = Nn[a * 3 + 2] + Nn[b * 3 + 2] + Nn[c * 3 + 2];
-        if (fx * nx + fy * ny + fz * nz < 0) { IDX[t + 1] = c; IDX[t + 2] = b; }
-      }
-    })();
-
     // --- weights, colors, tip mask ---
     var nv = P.length / 3;
     var skinI = new Uint16Array(nv * 4), skinW = new Float32Array(nv * 4);
@@ -703,7 +694,29 @@
     // palm anchor surface point (palm center)
     var palmPt = surfOnPalm([0.002 * sc, 0, -0.050 * sc], [0, -1, 0]).p;
 
+    // forearm start rings lying exactly on the hand surface (model space), per radial count
+    var wristTables = {};
+    function wristTable(nr, stations) {
+      var key = nr + ':' + stations.length;
+      if (wristTables[key]) return wristTables[key];
+      var out = [];
+      for (var a = 0; a < stations.length; a++) {
+        var z = stations[a], ring = [];
+        for (var b = 0; b < nr; b++) {
+          var ph = b / nr * PI * 2, dx = Math.cos(ph), dy = Math.sin(ph) * Wr.sy;
+          var l = Math.sqrt(dx * dx + dy * dy); dx /= l; dy /= l;
+          var r0 = 0.0, r1 = 0.06 * sc;
+          for (var it = 0; it < 30; it++) { var rm = (r0 + r1) / 2; if (sdfFull(dx * rm, dy * rm, z) < 0) r0 = rm; else r1 = rm; }
+          ring.push([dx * r0, dy * r0, z]);
+        }
+        out.push(ring);
+      }
+      wristTables[key] = out;
+      return out;
+    }
+
     MODELS[who] = {
+      wristTable: wristTable,
       who: who, spec: spec, geo: geo, nailGeo: nailGeo, bindMats: bindMats, bindInv: bindInv,
       chains: chains, grains: grains, glowPts: glowPts, palmPt: palmPt, FSY: FSY, sdf: sdfPalm,
       tris: IDX.length / 3
@@ -761,7 +774,9 @@
         var uu = a / (nu - 1), vvv = Math.abs(b / (nv - 1) * 2 - 1);
         var cc = mixc(spec.colNail, spec.colNailTip, sstep(1 - spec.nail.white - 0.02, 1 - spec.nail.white * 0.3, uu));
         // edges blend toward skin (nail fold)
-        cc = mixc(cc, spec.colBase, sstep(0.75, 1.0, vvv) * 0.55 + (1 - sstep(0.0, 0.16, uu)) * 0.6);
+        cc = mixc(cc, col(250, 225, 220), (1 - sstep(0.0, 0.30, uu)) * 0.35 * (1 - vvv));   // lunula-ish paler base
+        var rim = Math.max(sstep(0.82, 1.0, vvv), 1 - sstep(0.0, 0.10, uu));
+        cc = mixc(cc, spec.colKnuck, rim * 0.75);                                             // nail fold
         C.push(cc[0], cc[1], cc[2]);
         SI.push(boneIdx, 0, 0, 0); SW.push(1, 0, 0, 0);
       }
@@ -830,8 +845,9 @@
         .replace('#include <common>', '#include <common>\nuniform float uGlow;\nuniform vec3 uGlowColor;\nvarying float vTip;\n' + SKIN_GLSL)
         .replace('#include <color_fragment>', '#include <color_fragment>\n' +
           '{ float mt = hNoise(vBP * 160.0) * 0.6 + hNoise(vBP * 420.0) * 0.4;' +
-          '  diffuseColor.rgb *= 1.0 + (mt - 0.5) * 0.10 * uDetail;' +
-          '  diffuseColor.rgb = mix(diffuseColor.rgb, diffuseColor.rgb * vec3(1.03, 0.94, 0.93), smoothstep(0.55, 0.8, hNoise(vBP * 90.0 + 7.0)) * 0.6 * uDetail); }')
+          '  float dm = uDetail * (1.0 - smoothstep(-0.03, 0.0, vBP.z));' +
+          '  diffuseColor.rgb *= 1.0 + (mt - 0.5) * 0.10 * dm;' +
+          '  diffuseColor.rgb = mix(diffuseColor.rgb, diffuseColor.rgb * vec3(1.03, 0.94, 0.93), smoothstep(0.55, 0.8, hNoise(vBP * 90.0 + 7.0)) * 0.6 * dm); }')
         .replace('#include <normal_fragment_maps>', '#include <normal_fragment_maps>\n' +
           'if (uDetail > 0.0) {' +
           '  float fw = length(fwidth(vBP));' +
@@ -922,9 +938,8 @@
         // 1x1 rib: raised wale / sunken purl column
         var col2 = Math.floor(fx) & 1;
         var wale = Math.sin(ux * PI);
-        var v = Math.abs(ux - 0.5) * 2;
-        var loop = 1 - Math.abs(((uy + v * 0.5) % 1) - 0.5) * 2;
-        hh = col2 ? wale * (0.75 + 0.25 * loop) : 0.15 * wale;
+        var loop = 0.85 + 0.15 * Math.sin(uy * PI * 2);
+        hh = col2 ? wale * loop : 0.12 * wale;
       } else {
         // jersey: V-shaped loops in columns
         var vx = Math.abs(ux - 0.5) * 2;
@@ -940,7 +955,7 @@
     cx.putImageData(img, 0, 0);
     var map = new THREE.CanvasTexture(cv);
     map.colorSpace = THREE.SRGBColorSpace; map.wrapS = map.wrapT = THREE.RepeatWrapping; map.anisotropy = 4;
-    MAT[key] = { map: map, normal: heightToNormal(hgt, S, rib ? 2.4 : 1.6) };
+    MAT[key] = { map: map, normal: heightToNormal(hgt, S, rib ? 2.0 : 1.1) };
     return MAT[key];
   }
   function sleeveMaterial(kind) {
@@ -1033,11 +1048,11 @@
     this.hand = hand;
     this.spec = spec;
     var low = quality() === 'low';
-    this.nr = low ? 16 : 22;
+    this.nr = low ? 18 : 28;
     var sc = spec.palmLen / 0.088;
     // ring stations (s along curve)
     var fs = [], s;
-    for (s = -0.010 * sc; s < 0.02 * sc; s += 0.004 * sc) fs.push(s);
+    for (s = -0.005 * sc; s < 0.04 * sc; s += 0.004 * sc) fs.push(s);
     for (; s < spec.skinLen + 0.012; s += 0.012 * sc) fs.push(s);
     fs.push(spec.skinLen + 0.012);
     this.fs = fs;
@@ -1046,30 +1061,30 @@
       // folded linen cuff: lip, rolled band, then loose sleeve far off-screen
       var cuff = [0, 0.002, 0.005, 0.009, 0.015, 0.022, 0.029, 0.036, 0.041, 0.045, 0.048, 0.052, 0.058];
       cuff.forEach(function (d) { ss.push(s0 + d); });
-      for (s = s0 + 0.07; s < s0 + 0.62; s += 0.03) ss.push(s);
+      for (s = s0 + 0.07; s < s0 + 0.62; s += (s < s0 + 0.2 ? 0.03 : 0.06)) ss.push(s);
     } else {
       var rb = [0, 0.0015, 0.004, 0.008, 0.013, 0.018, 0.023, 0.027, 0.030, 0.034, 0.040, 0.048];
       rb.forEach(function (d) { ss.push(s0 + d); });
-      for (s = s0 + 0.06; s < s0 + 0.55; s += 0.03) ss.push(s);
+      for (s = s0 + 0.06; s < s0 + 0.55; s += (s < s0 + 0.2 ? 0.03 : 0.06)) ss.push(s);
     }
     this.ss = ss;
     this.cuffEnd = who === 'mama' ? 0.0 : 0.030;
     this.forearm = this._mkMesh(fs.length, this.nr, false, true);
     this.forearm.material = skinMaterial(who, hand.uniforms, 0);
     var sleeveKind = who === 'mama' ? 'linen' : 'knit';
-    this.sleeve = this._mkMesh(ss.length, this.nr + 6, true, false);
+    this.sleeve = this._mkMesh(ss.length, low ? 16 : 26, true, false);
     this.sleeve.material = sleeveMaterial(sleeveKind);
     if (who === 'child') {
       // rib part rendered with its own material: split by geometry groups
       var nRib = 0; for (var i = 0; i < ss.length; i++) if (ss[i] - s0 <= 0.0305) nRib = i;
-      var per = (this.nr + 6) * 6;
+      var per = (low ? 16 : 26) * 6;
       this.sleeve.geometry.clearGroups();
       this.sleeve.geometry.addGroup(0, nRib * per, 0);
       this.sleeve.geometry.addGroup(nRib * per, (ss.length - 1 - nRib) * per, 1);
       this.sleeve.material = [sleeveMaterial('rib'), sleeveMaterial('knit')];
     }
     hand.group.add(this.forearm); hand.group.add(this.sleeve);
-    this.sig = new Float32Array(20).fill(NaN);
+    this.sig = new Float32Array(20).fill(1e9);
     // dense path table
     this.NP = 72;
     this.tp = new Float32Array(this.NP * 3); this.tt = new Float32Array(this.NP * 3);
@@ -1097,18 +1112,24 @@
     geo.setIndex(idx);
     geo.boundingSphere = new THREE.Sphere(new THREE.Vector3(), 10);
     var m = new THREE.Mesh(geo);
-    m.frustumCulled = false;
+    m.frustumCulled = false; m.matrixAutoUpdate = false;
     m.castShadow = true; m.receiveShadow = true;
     m.userData.nr = nr; m.userData.rings = rings;
     return m;
   };
   var _m4 = new THREE.Matrix4(), _m4b = new THREE.Matrix4(), _v = new THREE.Vector3(), _v2 = new THREE.Vector3(), _v3 = new THREE.Vector3();
+  var _m4c = new THREE.Matrix4(), _q = new THREE.Quaternion(), _one = new THREE.Vector3(1, 1, 1), _mir = new THREE.Matrix4().makeScale(-1, 1, 1);
   Arm.prototype.update = function (force) {
     var hand = this.hand;
-    hand.group.updateWorldMatrix(true, false);
-    hand.inner.updateWorldMatrix(true, false);
+    hand.root.updateWorldMatrix(true, false);
     _m4b.copy(hand.group.matrixWorld).invert();
-    _m4.multiplyMatrices(_m4b, hand.inner.matrixWorld); // inner in group space
+    _m4.multiplyMatrices(_m4b, hand.root.matrixWorld); // wrist frame (root) in group space
+    // the idle sway lives on hand.inner: apply the same small rigid motion to the arm meshes (no rebuild)
+    _m4c.compose(hand.inner.position, _q.copy(hand.inner.quaternion), _one);
+    _m4c.premultiply(_m4).multiply(_m4b.copy(_m4).invert());
+    this.forearm.matrix.copy(_m4c); this.sleeve.matrix.copy(_m4c);
+    this.forearm.matrixWorldNeedsUpdate = true; this.sleeve.matrixWorldNeedsUpdate = true;
+    _m4b.copy(hand.group.matrixWorld).invert();
     var e = _v.copy(hand.elbow).applyMatrix4(_m4b);
     var me = _m4.elements, sig = this.sig, changed = !!force;
     for (var i = 0; i < 16; i++) if (Math.abs(sig[i] - me[i]) > 2e-5) { changed = true; break; }
@@ -1116,7 +1137,9 @@
     if (!changed) return false;
     for (i = 0; i < 16; i++) sig[i] = me[i];
     sig[16] = e.x; sig[17] = e.y; sig[18] = e.z;
-    this._build(_m4, e.clone());
+    var M = _m4.clone();
+    if (hand.side === 'L') M.multiply(_mir);
+    this._build(M, e.clone());
     return true;
   };
   Arm.prototype._build = function (M, E) {
@@ -1126,6 +1149,7 @@
     var sx = ux.length(); ux.normalize(); uy.normalize(); uz.normalize();
     var flip = ux.clone().cross(uy).dot(uz) < 0;
     if (flip) ux.negate(); // un-mirror the wrist frame for the arm
+    this._mirror = flip;
     // path: wrist -> bend near wrist -> straight to elbow -> continue off-screen
     var sc = spec.palmLen / 0.088;
     var P0 = W.clone().addScaledVector(uz, -0.03 * sc);       // starts inside the hand
@@ -1164,6 +1188,7 @@
       tv[k * 3] = V.x; tv[k * 3 + 1] = V.y; tv[k * 3 + 2] = V.z;
     }
     // handedness of (U,V,T) for winding: we always build V = T x U so it's consistent
+    this._M = M;
     this._fill(this.forearm, this.fs, false);
     this._fill(this.sleeve, this.ss, true);
   };
@@ -1193,7 +1218,7 @@
     }
     // inside the hand it is thinner (hidden), emerges a few mm behind the wrist
     var k = sstep(0.006 * sc, 0.016 * sc, s);
-    var g = mix(-0.0012, 0.00035, k);
+    var g = mix(-0.0012, 0.00022, k);
     return [ax + g, bx + g];
   };
   Arm.prototype._fill = function (mesh, stations, isSleeve) {
@@ -1205,6 +1230,8 @@
     var fr = { p: [0, 0, 0], u: [0, 0, 0], v: [0, 0, 0] };
     var rings = stations.length;
     var folds = this.folds;
+    var sc0 = spec.palmLen / 0.088, wA = 0.008 * sc0, wB = 0.036 * sc0;
+    var wt = isSleeve ? null : this.hand.model.wristTable(nr, stations);
     for (var a = 0; a < rings; a++) {
       var s = stations[a];
       this._frame(s, fr);
@@ -1244,7 +1271,7 @@
             var F = folds[q];
             f += Math.sin(ph * F[1] + F[0] + d * F[2]) * (0.5 + 0.5 * Math.sin(d * 9 + F[3] * 6));
           }
-          var fa = f * 0.0011 * foldAmt * (who === 'mama' ? 1.3 : 0.9);
+          var fa = f * 0.0011 * foldAmt * (who === 'mama' ? 1.3 : 1.6);
           A += fa; B += fa;
           // fabric hangs: slightly lower on the underside (palm side) away from the cuff
           if (sn < 0) B += 0.004 * sstep(0.06, 0.3, d) * -sn;
@@ -1254,10 +1281,22 @@
         pos[o] = fr.p[0] + fr.u[0] * ox + fr.v[0] * oy;
         pos[o + 1] = fr.p[1] + fr.u[1] * ox + fr.v[1] * oy;
         pos[o + 2] = fr.p[2] + fr.u[2] * ox + fr.v[2] * oy;
+        if (wt && s < wB) {
+          // near the wrist: lie exactly on the hand's surface, then hand over to the arm profile
+          var j = this._mirror ? (nr - b + nr / 2) % nr : b;
+          var lp = wt[a][j], me = this._M.elements;
+          var rr = Math.sqrt(lp[0] * lp[0] + lp[1] * lp[1]) || 1, f = 1 + (1 - Math.cos(PI / nr)) * 1.1 + 0.00010 / rr;
+          var lx = lp[0] * f, ly = lp[1] * f, lz = lp[2];
+          var hx = me[0] * lx + me[4] * ly + me[8] * lz + me[12];
+          var hy = me[1] * lx + me[5] * ly + me[9] * lz + me[13];
+          var hz = me[2] * lx + me[6] * ly + me[10] * lz + me[14];
+          var w = sstep(wA, wB, s);
+          pos[o] = mix(hx, pos[o], w); pos[o + 1] = mix(hy, pos[o + 1], w); pos[o + 2] = mix(hz, pos[o + 2], w);
+        }
         if (uv) {
-          var circ = PI * (A + B);
           var scl = who === 'mama' ? 0.045 : 0.03;
-          uv[(a * nr + b) * 2] = (b / nr) * Math.round(circ / scl);
+          if (!mesh.userData.repU) mesh.userData.repU = Math.max(3, Math.round(PI * (A + B) / scl));
+          uv[(a * nr + b) * 2] = (b / nr) * mesh.userData.repU;
           uv[(a * nr + b) * 2 + 1] = s / scl;
         }
         if (colA && a === 0 && this._colored !== true) { /* colors set below once */ }
@@ -1384,6 +1423,9 @@
     this.root.quaternion.setFromEuler(this.restRot);
     this.arm = new Arm(this);
     this._applyPose();
+    this.arm.update(true);
+    // whatever drives the frame loop, make sure the arm follows the wrist right before rendering
+    this.arm.forearm.onBeforeRender = function (r, scene) { if (scene && !scene.__handsHook) hookScene(scene); };
     this._tw = [];
     this._hidden = false;
     HANDS.push(this);
@@ -1486,6 +1528,7 @@
     if (o.rot) { if (o.rot.isQuaternion) toQ.copy(o.rot); else toQ.setFromEuler(o.rot); }
     if (o.pose) this.setPose(o.pose, Math.min(dur, Math.max(0.15, dur * 0.8)));
     this._killTw();
+    if (!o._hide) this._lastTarget = { pos: toP.clone(), q: toQ.clone() };
     var dist = fromP.distanceTo(toP);
     var arc = o.arc != null ? o.arc : Math.min(0.05, dist * 0.22);
     function apply(k) {
@@ -1494,9 +1537,10 @@
       root.quaternion.slerpQuaternions(fromQ, toQ, k);
     }
     if (!(dur > 0) || !G.tween) { apply(1); if (o.onDone) { try { o.onDone(); } catch (e) { } } return { kill: function () { } }; }
-    var proxy = { k: 0 };
+    var proxy = { k: 0 }, self2 = this;
+    this._moving = true;
     var ease = o.ease || (G.Ease && G.Ease.inOut);
-    var opts = { onUpdate: function () { apply(proxy.k); }, onDone: function () { apply(1); if (o.onDone) o.onDone(); } };
+    var opts = { onUpdate: function () { apply(proxy.k); }, onDone: function () { apply(1); self2._moving = false; if (o.onDone) o.onDone(); } };
     if (ease) opts.ease = ease;
     if (o.delay) opts.delay = o.delay;
     var tw;
@@ -1509,12 +1553,16 @@
     return this.moveTo({ pos: this.restPos, rot: this.restRot, pose: this.restPose, dur: dur != null ? dur : 0.5 });
   };
   Hand.prototype.hide = function (dur) {
-    if (!this._hidden) { this._shownPos = this.root.position.clone(); this._shownQ = this.root.quaternion.clone(); }
+    if (!this._hidden) {
+      var lt = this._moving ? this._lastTarget : null;
+      this._shownPos = lt ? lt.pos.clone() : this.root.position.clone();
+      this._shownQ = lt ? lt.q.clone() : this.root.quaternion.clone();
+    }
     this._hidden = true;
     var e = this.elbow.clone(), p = this.root.position.clone();
     var d = e.clone().sub(p); d.y = Math.max(d.y, 0); d.normalize();
     var to = p.clone().addScaledVector(d, 0.30); to.z = Math.max(to.z, e.z * 0.85);
-    return this.moveTo({ pos: to, dur: dur != null ? dur : 0.5, arc: 0 });
+    return this.moveTo({ pos: to, dur: dur != null ? dur : 0.5, arc: 0, _hide: true });
   };
   Hand.prototype.show = function (dur) {
     var p = this._shownPos || this.restPos, q = this._shownQ || new THREE.Quaternion().setFromEuler(this.restRot);
@@ -1611,7 +1659,8 @@
     }
   }
   function hookScene(obj) {
-    var r = obj; while (r.parent) r = r.parent;
+    var r = obj; while (r && r.parent) r = r.parent;
+    if (!r) return;
     if (!r.isScene || r.__handsHook) return;
     r.__handsHook = true;
     var prev = r.onBeforeRender;
@@ -1681,7 +1730,8 @@
     var arm = new THREE.Mesh(geo, armMat); arm.renderOrder = 19; arm.frustumCulled = false;
     holder.add(arm);
     // orientation: fingers toward -Z, tilted down 35deg (wrist up & toward +Z)
-    holder.quaternion.setFromEuler(new THREE.Euler(-35 * PI / 180, 0, 0));
+    // tilt 35deg (wrist up & toward +Z) and roll the thumb side up a little so the pointing finger reads in profile
+    holder.quaternion.setFromEuler(new THREE.Euler(-35 * PI / 180, 0.10, -0.55, 'YXZ'));
     var mats = makeMats();
     var tip = new THREE.Object3D(); group.add(tip);
     var press = 0, base = normPose('point');
