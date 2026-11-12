@@ -60,17 +60,17 @@
 - 1.5秒後、4本の手を `rest()` にして `G.Director.go('S4')`。
 
 ### S3 終了時の引き継ぎ状態（scenes_b はこれを前提にする）
-`G.W.riceC`: 子どものまな板中央、formed=1、filling あり。`G.W.riceM`: ママのまな板中央、formed=1、形 mamaT、filling=mamaFilling。4本の手は待機。炊飯器は開、しゃもじは釜。盆は (0,-0.335)、大皿は画面外。`state.t, mamaT, filling, mamaFilling, grains, round`。
+`G.W.riceC`: 子どものまな板中央、formed=1、filling あり。`G.W.riceM`: ママのまな板中央、formed=1、形 mamaT、filling=mamaFilling。4本の手は待機。炊飯器は開、しゃもじは釜。盆は `P.tray`、大皿は画面外 `P.plateOut`。`state.t, mamaT, filling, mamaFilling, grains, round`。
 
 ## S4 のり（scenes_b）
 - enter: `G.Cam.frame(FRAMES.nori, 0.6)`。
-- ママのお手本（約1.5秒）: ママの左手がのりの帯を自分のおにぎりへ（`riceM.setNori` 0→1 を 0.5秒、`nori`）。続いてママの右手が、もう1枚の のり（`createNoriStrip`、幅≈riceC.size×0.95）をつまんで、2枚のまな板の間・右寄り (0.105, 0.07, -0.03) あたりへ差し出し、小さく ゆらゆら。
+- ママのお手本（約1.5秒）: ママの左手がのりの帯を自分のおにぎりへ（`riceM.setNori` 0→1 を 0.5秒、`nori`）。続いてママの右手が、もう1枚の のり（`createNoriStrip`、幅≈riceC.size×0.95）をつまんで、2枚のまな板の間・右寄り（x≈0.10、高さ≈0.07、z は2枚のまな板の境目あたり）へ差し出し、小さく ゆらゆら。
 - 主役: 差し出された のり。`G.Hint.set({kind:'drag', at: のり, to: riceC})`。
 - 操作: のりに触れる → 即、子どもの手がつまむ（`pick`、ママの手は離して待機へ）。指に追従（少し はためく）。子どものまな板の上か riceC の近くで離す → 手前の縁に合わせて巻きつく（`riceC.setNori` 0→1 を 0.45秒、`nori`、黒い小さな かけらが少し）。別の所で離す → 差し出し位置のカウンターに ふわりと戻る（そこで光り続ける）。
 - 0.8秒後に S5。
 
 ## S5 おさら（scenes_b）
-- enter: ママの両手で、盆を左へ (-0.62)、大皿を右から (0,-0.335) へ同時にすべらせる（`slide`、0.9秒）。湯のみ2つも一緒に (±0.165, -0.455) へ（湯気あり。触ると `sip`＋湯気。入れる余裕が無ければ湯のみは省略可）。`G.Cam.frame(FRAMES.plate, 1.0)`。
+- enter: ママの両手で、盆を左へ（`P.trayOut`）、大皿を右から `P.plateIn` へ同時にすべらせる（`slide`、0.9秒）。湯のみは使わない。`G.Cam.frame(FRAMES.plate, 1.0)`。
 - ママ: 右手が自分のおにぎりを上からつかんで皿の `slots.mama` へ（`plate` 音）→ 隣の `slots.child` を とん とん と指さして待機へ。
 - 主役: 自分のおにぎり。`G.Hint.set({kind:'drag', at: riceC, to: slots.child の世界位置, object: riceC.group})`。皿の child スロットに halo。
 - 操作: おにぎりに触れる → 即、子どもの手が上からつかんで持ち上げる（`pick`）。皿の上（中心から 0.14m 以内）で離す → スロットへ（`plate`＋きらめき）。別の所で離す → まな板へ静かに戻る。
@@ -91,7 +91,7 @@
   - 2口目: 中の具が見える。具ごとの反応 — うめ: `sour`＋`G.Cam.shake` 小＋子どもの両手が ぶるぶるっ（くすっと笑える）/ しゃけ: `yum`＋手が ぴょんと弾む / こんぶ: `yum`（pitch 0.8）＋手がゆっくり うんうん。
   - 3口目: 食べ終わり。手が戻って両手を ぱんぱん と払う（`setGrains(0)`、`tap`×2）。ママも食べ終える。
   - アニメ中の連打は無視（キューしない）。
-- 食べ終わったら: ママの手（左）が中央手前 (0, 0.10, -0.06) あたりへ、パー（open）で手のひらを上・少し子ども向きに出す。指先が光る。`G.Hint.set({kind:'tap', at: ママの手のひら})`。
+- 食べ終わったら: ママの手（左）が中央（2枚のまな板の間あたり、高さ≈0.10）へ、パー（open）で手のひらを上・少し子ども向きに出す。指先が光る。`G.Hint.set({kind:'tap', at: ママの手のひら})`。
 - 操作: ママの手のひらを触る → 即、子どもの手がパーで ぱちん（0.12秒）、`clap`＋大きなきらめき＋`G.Cam.shake` 微小。何度でもできる。最初の1回でおしまいへ。
 - おしまい（約5秒・やさしく）: `ending` のフレーズ、ママの手が子どもの手の甲を ぽん ぽん と やさしくなでる（`tap` 小）、皿のちびおにぎりたちの上に きらめきが ゆっくり舞う、カメラはゆっくり皿へ。`state.round++`、保存。
 - 次の回: `G.W.resetRound()`（ふたが閉まる `lidClose`、盆と皿が入れ替わる `slide`、手は待機）→ `state.mamaT = G.W.SHAPES[round % 3]`、`state.mamaFilling` も次へ → `G.Director.go('S0')`。ボタンがまた光る。ちびおにぎりは皿に残り、次の S5 で皿と一緒に戻ってくる。

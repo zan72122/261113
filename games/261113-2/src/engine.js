@@ -754,8 +754,8 @@
     scene.add(pools.normal.mesh); scene.add(pools.add.mesh);
     haloTex = canvasTex(256, 256, function (g) {
       var gr = g.createRadialGradient(128, 128, 0, 128, 128, 128);
-      gr.addColorStop(0.0, 'rgba(255,255,255,0.42)');
-      gr.addColorStop(0.42, 'rgba(255,255,255,0.62)');
+      gr.addColorStop(0.0, 'rgba(255,255,255,0.22)');
+      gr.addColorStop(0.42, 'rgba(255,255,255,0.5)');
       gr.addColorStop(0.62, 'rgba(255,255,255,0.78)');
       gr.addColorStop(0.78, 'rgba(255,255,255,0.32)');
       gr.addColorStop(1.0, 'rgba(255,255,255,0)');
@@ -996,8 +996,7 @@
     var inner = new THREE.Group();
     inner.rotation.x = -0.55; // finger points forward-down, hand rises behind
     group.add(inner);
-    var mat = new THREE.MeshStandardMaterial({ color: 0xf0c3a4, roughness: 0.55, metalness: 0, transparent: true, opacity: 0.45, depthWrite: false });
-    mat.color.offsetHSL(0, 0, 0.02);
+    var mat = new THREE.MeshStandardMaterial({ color: 0xe7a283, roughness: 0.55, metalness: 0, transparent: true, opacity: 0.5, depthWrite: false });
     var pre = new THREE.MeshBasicMaterial({ colorWrite: false, depthWrite: true, transparent: true });
     function add(geo) {
       var a = new THREE.Mesh(geo, pre); a.renderOrder = 40; inner.add(a);
@@ -1019,7 +1018,7 @@
     var tip = new THREE.Object3D(); group.add(tip);
     return {
       group: group, tip: tip,
-      setOpacity: function (v) { mat.opacity = 0.45 * G.clamp(v, 0, 1); group.visible = v > 0.01; },
+      setOpacity: function (v) { mat.opacity = 0.5 * G.clamp(v, 0, 1); group.visible = v > 0.01; },
       setPress: function (p) { inner.scale.set(1 + 0.04 * p, 1 - 0.06 * p, 1); }
     };
   }

@@ -96,8 +96,8 @@
     var hc = makeCanvas(S, S), ac = makeCanvas(S, S);
     var hx = hc.getContext('2d'), ax = ac.getContext('2d');
     hx.fillStyle = '#000'; hx.fillRect(0, 0, S, S);
-    ax.fillStyle = 'rgb(168,162,150)'; ax.fillRect(0, 0, S, S);
-    var r = rng(9137), count = 900;
+    ax.fillStyle = 'rgb(196,190,177)'; ax.fillRect(0, 0, S, S);
+    var r = rng(9137), count = 1150;
     function grain(ctx, x, y, a, L, W, stops) {
       for (var ox = -1; ox <= 1; ox++) for (var oy = -1; oy <= 1; oy++) {
         var px = x + ox * S, py = y + oy * S;
@@ -136,7 +136,7 @@
     var hid = hx.getImageData(0, 0, S, S), hd = hid.data;
     var aid = ax.getImageData(0, 0, S, S), ad = aid.data;
     for (var p = 0; p < S * S; p++) {
-      var h = hd[p * 4] / 255, ao = 0.8 + 0.2 * smooth(0.05, 0.7, h);
+      var h = hd[p * 4] / 255, ao = 0.86 + 0.14 * smooth(0.05, 0.7, h);
       ad[p * 4] *= ao; ad[p * 4 + 1] *= ao; ad[p * 4 + 2] *= ao * 0.995;
     }
     ax.putImageData(aid, 0, 0);
@@ -377,7 +377,7 @@
     var g = new THREE.SphereGeometry(1, seg, Math.round(seg * 0.7));
     var p = g.attributes.position, n = p.count, col = new Float32Array(n * 3);
     var o = seed * 13.7;
-    var cBase = srgb(150, 18, 26), cDeep = srgb(84, 8, 16), cHi = srgb(196, 46, 38);
+    var cBase = srgb(132, 14, 24), cDeep = srgb(62, 4, 12), cHi = srgb(178, 40, 36);
     var tmp = new THREE.Color(), minY = 1e9, i;
     for (i = 0; i < n; i++) {
       var x = p.getX(i), y = p.getY(i), z = p.getZ(i);
@@ -388,7 +388,7 @@
       }
       rid /= 1.75;                                    // 0..1 尾根
       var low = noise3(x * 1.3 + o, y * 1.3, z * 1.3 - o);
-      var d = 1 + 0.085 * (rid - 0.6) + 0.06 * low;
+      var d = 1 + 0.13 * (rid - 0.6) + 0.07 * low;
       var top = Math.max(0, y - 0.86) / 0.14; d -= 0.12 * top;   // へたのくぼみ
       var px = x * d, py = y * d * 0.8, pz = z * d;
       if (py < -0.66) py = -0.66 - (py + 0.66) * 0.25;            // 底は平たく
@@ -453,7 +453,7 @@
       P.set(Math.cos(a) * rr, hy + 0.0006, -Math.sin(a) * rr);
       var yaw = r() * TAU, pitch = (r() - 0.5) * 0.9;
       D.set(Math.cos(yaw) * Math.cos(pitch), Math.sin(pitch), Math.sin(yaw) * Math.cos(pitch));
-      var len = 0.007 + r() * 0.009, wid = 0.0017 + r() * 0.0012, curl = (r() - 0.5) * 6, roll = (r() - 0.5) * 3;
+      var len = 0.008 + r() * 0.01, wid = 0.0022 + r() * 0.0012, curl = (r() - 0.5) * 6, roll = (r() - 0.5) * 3;
       var segL = len / SEG;
       P.addScaledVector(D, -len / 2);
       Nn.set(0, 1, 0); Nn.addScaledVector(D, -Nn.dot(D)).normalize();
@@ -509,9 +509,9 @@
     if (kind === 'ume') {
       g.add(shadowMesh(umeGeometry(0.009, seed), umeMaterial()));
     } else if (kind === 'sake') {
-      g.add(shadowMesh(sakeGeometry(tier() === 'low' ? 18 : 28, 0.0085, 0.0075, 11 + seed), sakeMaterial()));
+      g.add(shadowMesh(sakeGeometry(tier() === 'low' ? 22 : 36, 0.0105, 0.009, 11 + seed), sakeMaterial()));
     } else {
-      g.add(shadowMesh(kombuGeometry(tier() === 'low' ? 16 : 26, 0.0085, 0.0062, 21 + seed), kombuMaterial()));
+      g.add(shadowMesh(kombuGeometry(tier() === 'low' ? 22 : 36, 0.0105, 0.0075, 21 + seed), kombuMaterial()));
       g.add(shadowMesh(sesameGeometry(5, 0.008, 0.006, 31 + seed), sesameMaterial()));
     }
     g.userData.kind = kind;
@@ -671,27 +671,29 @@
   BP._makeCircles = function () {
     this._circles = [];
     if (this.bites <= 0) return;
+    // 円は上面の高さで中心に届かない大きさに限る（星形のまま切り取れるように）
     var sz = this.size, Rt = sampleOutline(this.outline, HALF_PI) * sz;
-    var r1 = 0.62 * sz, d1 = Rt * 0.55 + r1, a1 = HALF_PI + 0.12;
-    this._circles.push({ x: Math.cos(a1) * d1, z: -Math.sin(a1) * d1, r: r1 });
+    var r1 = 0.8 * sz, n1 = Math.max(Rt * 0.5, Rt - 0.75 * sz), a1 = HALF_PI + 0.07;
+    this._circles.push({ x: Math.cos(a1) * (n1 + r1), z: -Math.sin(a1) * (n1 + r1), r: r1 });
     if (this.bites >= 2) {
-      var r2 = 0.86 * sz, d2 = r2 + 0.06 * sz, a2 = HALF_PI - 0.16;
-      this._circles.push({ x: Math.cos(a2) * d2, z: -Math.sin(a2) * d2, r: r2 });
+      var r2 = 1.05 * sz, n2 = 0.06 * sz, a2 = HALF_PI - 0.05;
+      this._circles.push({ x: Math.cos(a2) * (n2 + r2), z: -Math.sin(a2) * (n2 + r2), r: r2 });
     }
   };
   BP._clip = function (theta, y) {
     var cs = this._circles; if (!cs.length) return Infinity;
     var dx = Math.cos(theta), dz = -Math.sin(theta), best = Infinity, H = this._H;
-    var lean = 1.15 * H;
+    var lean = 0.55 * H, yh = clamp(y / H, 0, 1), yk = yh * yh * yh;
     for (var i = 0; i < cs.length; i++) {
-      var C = cs[i], rr = C.r + (y / H - 0.5) * lean;
+      var C = cs[i], rr = C.r + (yk - 1) * lean;   // 上の縁ほど深く（断面の上側が上を向く）
       if (rr <= 0) continue;
       var b = dx * C.x + dz * C.z, cc = C.x * C.x + C.z * C.z;
+      if (b <= 0) continue;
       var disc = b * b - (cc - rr * rr); if (disc < 0) continue;
-      var tE = b - Math.sqrt(disc); if (b + Math.sqrt(disc) < 0) continue;
+      var tE = b - Math.sqrt(disc);
       // 歯形の浅い波
       var qx = dx * tE - C.x, qz = dz * tE - C.z, beta = Math.atan2(qz, qx);
-      rr *= 1 + 0.045 * (Math.abs(Math.cos(beta * 4.5 + this._toothPh + i)) - 0.55);
+      rr *= 1 + 0.035 * Math.cos(beta * 9 + this._toothPh + i * 1.7);
       disc = b * b - (cc - rr * rr); if (disc < 0) continue;
       tE = Math.max(0, b - Math.sqrt(disc));
       if (tE < best) best = tE;
@@ -714,7 +716,9 @@
     if (y < 0) y = 0;
     var clip = this._clip(theta, y);
     if (info) info.clipped = rho > clip ? rho - clip : 0;
-    if (rho > clip) rho = clip;
+    if (rho > clip) {   // 断面はぽろぽろ
+      rho = clip - 0.0007 * (0.5 + 0.5 * noise3(ct * clip * 900, y * 900, st * clip * 900));
+    }
     out.set(rho * ct, y, -rho * st);
     return out;
   };
@@ -801,7 +805,7 @@
     var r = rng(this.seed * 3 + 11), col = new THREE.Color();
     this._gp = [];
     for (var i = 0; i < n; i++) {
-      this._gp.push({ u1: r(), u2: r(), a: r() * TAU, sc: 0.88 + r() * 0.24, tilt: (r() - 0.5) * 2, emb: r(), vis: r(), edge: r() < 0.32 });
+      this._gp.push({ u1: r(), u2: r(), a: r() * TAU, sc: 0.88 + r() * 0.24, tilt: (r() - 0.5) * 2, emb: r(), vis: r(), edge: r() < 0.25 });
       var b = 0.95 + r() * 0.07;
       col.setRGB(b, b * (0.995 + r() * 0.01), b * (0.985 + r() * 0.015));
       im.setColorAt(i, col);
@@ -826,7 +830,7 @@
       var g = this._gp[i];
       var th = invCDF(this._thCDF, g.u2) / NA * TAU;
       var phi;
-      if (g.edge) phi = HALF_PI + (g.u1 - 0.45) * 0.75;
+      if (g.edge) phi = HALF_PI + (g.u1 - 0.7) * 0.5;
       else {
         var rr = invCDF(this._rowCDF, g.u1);
         phi = clamp(rr <= NT ? rr * (HALF_PI / NT) : HALF_PI + (rr - NT) * (HALF_PI / NB), 0.05, HALF_PI + 0.5);
@@ -949,8 +953,8 @@
     if (this.core) { this.inner.remove(this.core); disposeTree(this.core); this.core = null; }
     if (!this.filling || this.bites <= 0 || this.bites >= 3) return;
     var src = createFillingPiece(this.filling, (this.seed % 7) + 1);
-    var k = this.size / 0.032 * 1.05, self = this;
-    var M = new THREE.Matrix4().compose(new THREE.Vector3(0, this._H * 0.5 - 0.0075 * k * 0.5, 0.0), new THREE.Quaternion(), new THREE.Vector3(k, k, k));
+    var k = this.size / 0.032 * 1.25, self = this;
+    var M = new THREE.Matrix4().compose(new THREE.Vector3(0, this._H * 0.64 - 0.0075 * k * 0.5, -0.16 * this.size), new THREE.Quaternion(), new THREE.Vector3(k, k, k));
     var core = new THREE.Group(); core.name = 'fillingCore';
     src.updateMatrixWorld(true);
     src.children.forEach(function (ch) {

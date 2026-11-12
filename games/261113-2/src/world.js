@@ -9,28 +9,29 @@
   function tryCall(fn, self, args, tag) { try { return fn.apply(self, args || []); } catch (e) { warn(tag, e); } }
 
   var P = {
-    cooker: V(0, 0, -0.57),
-    tray: V(0, 0, -0.335),
-    boardM: V(0, 0, -0.165),
-    boardC: V(0, 0, 0.075),
-    plateIn: V(0, 0, -0.335),
-    plateOut: V(1.0, 0, -0.335),   // far enough to stay hidden on wide screens
-    trayOut: V(-1.0, 0, -0.335),
-    shamoji: V(0.165, 0, -0.50),
+    cooker: V(0, 0, -0.63),
+    tray: V(0, 0, -0.345),
+    boardM: V(0, 0, -0.135),
+    boardC: V(0, 0, 0.095),
+    plateIn: V(0, 0, -0.345),
+    plateOut: V(1.0, 0, -0.345),   // far enough to stay hidden on wide screens
+    trayOut: V(-1.0, 0, -0.345),
+    shamoji: V(0.165, 0, -0.56),
     cupL: V(-0.16, 0, -0.50),
     cupR: V(0.16, 0, -0.50),
-    cupsIn: V(0, 0, -0.50),   // props.cups group origin; its cups sit at local x = ±0.16
+    cupsIn: V(0, 0, -0.50),   // (cups are not used in the story; kept hidden)
     cupsOut: V(1.0, 0, -0.50)
   };
+  var PLATE_SCALE = 0.92;     // 0.27 plate -> ~0.25 so it sits between cooker and mama's board
 
   var FRAMES = {
-    cooker: { cx: 0, cz: -0.50, w: 0.38, d: 0.50 },
-    scoop: { cx: 0, cz: -0.24, w: 0.40, d: 0.86 },
-    fill: { cx: 0, cz: -0.13, w: 0.40, d: 0.62 },
-    shape: { cx: 0, cz: -0.03, w: 0.40, d: 0.54 },
-    nori: { cx: 0, cz: -0.03, w: 0.40, d: 0.54 },
-    plate: { cx: 0, cz: -0.14, w: 0.40, d: 0.66 },
-    eat: { cx: 0, cz: -0.20, w: 0.40, d: 0.56 }
+    cooker: { cx: 0, cz: -0.60, w: 0.30, d: 0.42 },
+    scoop: { cx: 0, cz: -0.28, w: 0.34, d: 0.94 },
+    fill: { cx: 0, cz: -0.11, w: 0.34, d: 0.60 },
+    shape: { cx: 0, cz: -0.025, w: 0.30, d: 0.44 },
+    nori: { cx: 0, cz: -0.025, w: 0.30, d: 0.44 },
+    plate: { cx: 0, cz: -0.15, w: 0.32, d: 0.66 },
+    eat: { cx: 0, cz: -0.19, w: 0.32, d: 0.58 }
   };
 
   var SHAPES = [0.5, 1, 0];
@@ -272,7 +273,7 @@
     place(props.tray, P.tray); scene.add(props.tray); ensureShadows(props.tray, true);
     place(props.boardMama, P.boardM); scene.add(props.boardMama); ensureShadows(props.boardMama, true);
     place(props.boardChild, P.boardC); scene.add(props.boardChild); ensureShadows(props.boardChild, true);
-    place(props.plate, P.plateOut); scene.add(props.plate); ensureShadows(props.plate, true);
+    place(props.plate, P.plateOut); props.plate.scale.setScalar(PLATE_SCALE); scene.add(props.plate); ensureShadows(props.plate, true);
     place(props.cups, P.cupsOut); scene.add(props.cups); ensureShadows(props.cups, true);
     props.cups.visible = false;
 

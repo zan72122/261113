@@ -125,7 +125,7 @@
 
 ### world.js（担当: エンジン役）
 `G.W` — 配置と共有状態。`G.W.build()` が Props/Hands/Rice を生成して scene に置く。
-- 配置（x, z）: 炊飯器 (0, -0.57) / 盆 (0, -0.335) / ママのまな板 (0, -0.165) / 子どものまな板 (0, 0.075) / 大皿 最初は画面外 (0.62, -0.335)、S5 で (0, -0.335) へ / 盆は S5 で (-0.62, -0.335) へ / 湯のみ (±0.16, -0.50) は S5 以降。
+- 配置（x, z）: 炊飯器 (0, -0.63) / 盆 (0, -0.345) / ママのまな板 (0, -0.135) / 子どものまな板 (0, 0.095) / しゃもじ (0.165, -0.56) / 大皿（0.92倍）最初は画面外 `P.plateOut` (1.0, -0.345)、S5 で `P.plateIn` (0, -0.345) へ / 盆は S5 で `P.trayOut` (-1.0, -0.345) へ / 湯のみは使わない（非表示のまま）。**位置は必ず `G.W.P` と実物の world 位置から取る（数値を直書きしない）。**
 - `G.W.P = {cooker, tray, boardM, boardC, plateIn, plateOut, trayOut, ...}`（Vector3 の定数）。
 - `G.W.props`, `G.W.hands = {cL, cR, mL, mR}`, `G.W.riceC`, `G.W.riceM`, `G.W.riceTiny`（body か null）, `G.W.minis`（過去のちびおにぎり body の配列）。
 - `G.W.state = {round, mamaT, t, filling, mamaFilling, scoops, grains, ...}`、`G.W.SHAPES = [0.5, 1, 0]`（回ごとのママの形）。
