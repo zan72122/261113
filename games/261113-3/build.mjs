@@ -26,7 +26,8 @@ const put = (mark, body) => {
 };
 put('/*__THREE__*/', safe(fs.readFileSync(path.join(dir, 'src', 'three.min.js'), 'utf8')));
 put('/*__ASSETS__*/', 'window.G_ASSETS=' + safe(JSON.stringify(assets)) + ';');
-put('/*__CODE__*/', safe(ORDER.filter((f) => fs.existsSync(file(f)))
+const skip = (process.env.SKIP || '').split(',');
+put('/*__CODE__*/', safe(ORDER.filter((f) => !skip.includes(f) && fs.existsSync(file(f)))
   .map((f) => `\n/* ---- ${f} ---- */\n` + fs.readFileSync(file(f), 'utf8')).join('\n')));
 const out = process.env.OUT || path.join(dir, 'index.html');
 fs.writeFileSync(out, html);
