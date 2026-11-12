@@ -154,15 +154,16 @@
     '#ifdef MASK_XY\nvec2 mUV = vec2(vLP.x * uMS.x + 0.5, vLP.y * uMS.y);\n#else\nvec2 mUV = vLP.xz * uMS.x + 0.5;\n#endif\n' +
     'float wetK = uWet * (1.0 - texture2D(uMask, mUV).r);\n' +
     'wetK *= 0.8 + 0.2 * sin(vLP.x * 260.0 + sin(vLP.z * 190.0 + vLP.y * 150.0) * 2.0);\n' +
-    'diffuseColor.rgb = mix(diffuseColor.rgb, diffuseColor.rgb * 0.66 + vec3(0.13, 0.15, 0.18), wetK * 0.9);\n' +
-    '#ifdef ABOOST\ndiffuseColor.a += wetK * 0.16;\n#endif\n';
+    'diffuseColor.rgb = mix(diffuseColor.rgb, diffuseColor.rgb * 0.50 + vec3(0.13, 0.16, 0.20), wetK * 0.95);\n' +
+    '#ifdef ABOOST\ndiffuseColor.a += wetK * 0.16;\n#endif\n' +
+    'float bandS = (vLP.x * 0.8 + vLP.z * 0.25 + vLP.y * 0.6) * uMS.z;\n' +
+    'diffuseColor.rgb *= 1.0 - 0.42 * max(0.0, exp(-pow((bandS - uBand) * 1.3, 2.0)) - exp(-pow((bandS - uBand) * 3.2, 2.0)));\n';
   var FS_ROUGH = '#include <roughnessmap_fragment>\nroughnessFactor = mix(roughnessFactor, 0.6, wetK);\n';
   var FS_EMIS = '#include <emissivemap_fragment>\n' +
     '{ float fres = pow(1.0 - abs(dot(normal, normalize(vViewPosition))), 2.0);\n' +
     '  totalEmissiveRadiance += uGlowC * uGlow * (0.07 + 0.5 * fres);\n' +
-    '  float bs = (vLP.x * 0.8 + vLP.z * 0.25 + vLP.y * 0.6) * uMS.z;\n' +
-    '  float band = exp(-pow((bs - uBand) * 2.4, 2.0));\n' +
-    '  totalEmissiveRadiance += vec3(1.0, 0.96, 0.88) * band * (0.45 + 1.1 * fres); }\n';
+    '  float band = exp(-pow((bandS - uBand) * 4.0, 2.0));\n' +
+    '  totalEmissiveRadiance += vec3(1.0, 0.95, 0.85) * band * (0.7 + 1.2 * fres); }\n';
   var FS_LIGHT = '#include <lights_physical_fragment>\n#ifdef USE_CLEARCOAT\nmaterial.clearcoat *= 1.0 - 0.8 * wetK;\nmaterial.clearcoatRoughness = mix(material.clearcoatRoughness, 0.5, wetK);\n#endif\n';
   var FS_OUT = '#include <output_fragment>\n#ifdef ABOOST\n{ float fr2 = pow(1.0 - abs(dot(normal, normalize(vViewPosition))), 3.0);\n' +
     '  vec3 spc = reflectedLight.directSpecular + reflectedLight.indirectSpecular;\n' +
@@ -192,15 +193,16 @@
   function shared() {
     if (S) return S;
     S = {};
-    S.dropGeo = new T.SphereGeometry(1, 16, 8, 0, TAU, 0, Math.PI / 2);
+    S.dropGeo = new T.SphereGeometry(1, 9, 4, 0, TAU, 0, Math.PI / 2);
     S.dropMat = new T.MeshPhysicalMaterial({ color: 0xa9b8c2, roughness: 0.03, metalness: 0, transparent: true, opacity: 0.3,
       depthWrite: false, envMapIntensity: 1.8, ior: 1.33, clearcoat: 1, clearcoatRoughness: 0.02 });
     S.dropMat.defines = { ABOOST: 1, ABOOST_F: '0.5', ABOOST_S: '1.5' };
     S.dropMat.onBeforeCompile = dropOBC;
     S.dropMat.customProgramCacheKey = function () { return 'dishDrop'; };
-    S.foamGeo = new T.SphereGeometry(1, 14, 10);
-    S.foamMat = new T.MeshPhysicalMaterial({ color: 0xfdfeff, roughness: 0.3, clearcoat: 1, clearcoatRoughness: 0.06,
-      iridescence: 0.35, iridescenceIOR: 1.3, iridescenceThicknessRange: [180, 480], envMapIntensity: 1.1 });
+    S.foamGeo = new T.SphereGeometry(1, 10, 7);
+    // 泡: つやを抑えた白いかたまり（真珠の玉に見えないよう、陰影をやわらげる）
+    S.foamMat = new T.MeshStandardMaterial({ color: 0xffffff, roughness: 0.92, metalness: 0,
+      emissive: 0xeef3f6, emissiveIntensity: 0.34, envMapIntensity: 0.5 });
     S.riceTex = texRice();
     S.riceMat = new T.MeshPhysicalMaterial({ color: 0xffffff, map: S.riceTex, bumpMap: S.riceTex, bumpScale: 0.9, roughness: 0.5,
       clearcoat: 0.25, clearcoatRoughness: 0.35, sheen: 0.3, sheenColor: new T.Color(0xffffff), sheenRoughness: 0.6 });
@@ -470,11 +472,11 @@
   // Dish
   // =====================================================================
   var CFG = {
-    plate: { seed: 101, drops: 100, du: 0.0058, cloth: 1.0 },
-    bowlL: { seed: 202, drops: 92, du: 0.0042, cloth: 0.78, foot: 0.47 },
-    bowlM: { seed: 303, drops: 84, du: 0.0038, cloth: 0.7, foot: 0.46 },
-    bowlS: { seed: 404, drops: 72, du: 0.0034, cloth: 0.62, foot: 0.48 },
-    glass: { seed: 505, drops: 80, du: 0.003, cloth: 0.7 }
+    plate: { seed: 101, drops: 100, du: 0.0066, cloth: 1.0 },
+    bowlL: { seed: 202, drops: 92, du: 0.0048, cloth: 0.78, foot: 0.47 },
+    bowlM: { seed: 303, drops: 84, du: 0.0043, cloth: 0.7, foot: 0.46 },
+    bowlS: { seed: 404, drops: 72, du: 0.0038, cloth: 0.62, foot: 0.48 },
+    glass: { seed: 505, drops: 80, du: 0.0034, cloth: 0.7 }
   };
   var FOODMAX = { plate: 5, bowlL: 6, bowlM: 3, bowlS: 3, glass: 3 };
 
@@ -513,6 +515,7 @@
   function glaze(d, o) {
     var m = new T.MeshPhysicalMaterial({ color: o.color != null ? o.color : 0xffffff, map: o.map || null, roughness: 0.24, metalness: 0,
       clearcoat: 0.6, clearcoatRoughness: 0.12, envMapIntensity: 0.85 });
+    m.color.multiplyScalar(0.87);   // 白とびを防ぐ（磁器の白は 0.8 台）
     m.onBeforeCompile = mkOBC(d.U);
     m.userData.kind = 'glaze';
     d.mats.push(m);
@@ -708,7 +711,7 @@
 
   // ---------- 泡 ----------
   function buildFoam(d) {
-    var N = d.isPlate ? 46 : d.isGlass ? 34 : 40, r = rng(d.cf.seed + 9), o = {}, i;
+    var N = d.isPlate ? 96 : d.isGlass ? 44 : 70, r = rng(d.cf.seed + 9), o = {}, i;
     var inv = d.P.sink.q.clone().invert();
     var up = new T.Vector3(0, 1, 0).applyQuaternion(inv);
     d.foamDown = up.clone().negate();
@@ -731,11 +734,11 @@
     mesh.frustumCulled = false; mesh.castShadow = false; mesh.receiveShadow = true;
     d.foamMesh = mesh; d.foamN = N; d.foamP = new Float32Array(N * 3); d.foamR = new Float32Array(N);
     d.foamTh = new Float32Array(N); d.foamFall = new Float32Array(N);
-    var cr = R * (d.isPlate ? 0.38 : 0.62);
+    var cr = R * (d.isPlate ? 0.62 : 0.82);
     for (i = 0; i < N; i++) {
       var cc = centers[i < N * 0.45 ? 0 : (i % centers.length)];
       var a = r() * TAU, rr = Math.sqrt(r()) * cr, fall = 1 - rr / cr;
-      var rad = R * lerp(0.05, 0.19, Math.pow(r(), 1.6) * (0.5 + 0.5 * fall));
+      var rad = R * (r() < 0.3 ? lerp(0.2, 0.34, r()) * (0.6 + 0.4 * fall) : lerp(0.045, 0.13, r()));
       if (d.isPlate) rad *= 0.75;
       var p = cc.clone().addScaledVector(t1, Math.cos(a) * rr).addScaledVector(t2, Math.sin(a) * rr)
         .addScaledVector(up, rad * 0.35 + r() * cr * 0.42 * fall);
@@ -1374,8 +1377,8 @@
   D.get = function (id) { return byId[id]; };
   D.wipeView = function (id) {
     var d = byId[id] || byId.plate, L = G.L.mat, r = d ? d.r : 0.1, h = d ? d.h : 0.05;
-    var w = Math.max(0.28, r * 2 * 2.1);
-    return { look: [L.x + 0.035, L.top + h * 0.5, L.z + 0.02], dir: d && d.isGlass ? [0, 0.8, 1] : [0, 1.35, 1],
+    var w = Math.max(0.25, r * 2 * 1.62);
+    return { look: [L.x + 0.02 + r * 0.16, L.top + h * 0.5, L.z + 0.02], dir: d && d.isGlass ? [0, 0.8, 1] : [0, 1.8, 1],
       w: w, h: w * 0.95, fovP: 46, fovL: 38 };
   };
 })();
