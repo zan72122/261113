@@ -262,7 +262,21 @@
     W.props = props;
 
     // a soft back wall so wide screens never look into the void
-    var wall = mesh(new THREE.PlaneGeometry(4, 1.6), mats().wall, false);
+    var wallMat = mats().wall;
+    try {
+      // plain white kitchen tiles (10cm) with pale grout
+      var tc = document.createElement('canvas'); tc.width = tc.height = 128;
+      var tx = tc.getContext('2d');
+      tx.fillStyle = '#d9d2c4'; tx.fillRect(0, 0, 128, 128);
+      var tg = tx.createLinearGradient(0, 0, 128, 128);
+      tg.addColorStop(0, '#f6f2ea'); tg.addColorStop(1, '#ece6da');
+      tx.fillStyle = tg; tx.fillRect(3, 3, 122, 122);
+      var tt = new THREE.CanvasTexture(tc);
+      tt.colorSpace = THREE.SRGBColorSpace; tt.wrapS = tt.wrapT = THREE.RepeatWrapping; tt.repeat.set(40, 16);
+      tt.anisotropy = 4;
+      wallMat = new THREE.MeshStandardMaterial({ map: tt, roughness: 0.32, metalness: 0 });
+    } catch (e) { wallMat = mats().wall; }
+    var wall = mesh(new THREE.PlaneGeometry(4, 1.6), wallMat, false);
     wall.position.set(0, 0.8, -1.0); wall.receiveShadow = false;
     scene.add(wall); W.wall = wall;
 
